@@ -1,0 +1,65 @@
+<admin-page>
+    <section class="admin-page">
+        <div class="navigation">
+            <nav>
+                <ul>
+                    <li each="{o in Object.entries(menuOptions)}"
+                        class="{state.selected == o[1] ? 'selected' :''}">
+                        <a onclick="{()=>switchMode(o[1])}">{o[0]}</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div is="{currentPage()}">
+        </div>
+
+    </section>
+    <script>
+
+
+        import {Alert} from "../../../services/alert-service";
+        import appState from '../../../lib/state-manager'
+        import AdminManagement from './admin-management.riot'
+        import UserManagement from './user-management.riot'
+        import ClientLog from './client-log.riot'
+        import {Router} from "../../../services/router";
+
+
+        const statePages = {
+            defaultMode: null,
+            adminSelector: 'admin-management',
+            manageUsers: 'user-management',
+            clientLog: 'client-log'
+        }
+
+        export default {
+
+            components: {
+                AdminManagement,
+                UserManagement,
+                ClientLog
+            },
+            menuOptions: {
+                'Managing Administrators': 'adminSelector',
+                'User Manager': 'manageUsers',
+                'Client Log': 'clientLog'
+            },
+            onMounted() {
+                const selected = appState.context || 'manageUsers'
+                this.update({selected})
+            },
+            currentPage() {
+                return this.state.selected ? statePages[this.state.selected] : 'admin-management'
+            },
+            switchMode(selected) {
+                Router.navigate('admin/' + selected)
+                this.update({selected})
+            },
+            toaster() {
+                Alert('a toast!', 'info')
+            }
+        }
+
+    </script>
+</admin-page>

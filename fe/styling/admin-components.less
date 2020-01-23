@@ -1,0 +1,230 @@
+@import "./scheme.less";
+
+.ontology {
+
+  h1 {
+    grid-area: label;
+  }
+
+  .entities {
+    .standard-border();
+  }
+
+  zippy {
+    float: right;
+  }
+
+  nav {
+    ul {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+
+      li {
+        border: 1px solid darkblue;
+        border-radius: 1em;
+      }
+    }
+  }
+}
+
+
+.entity-browser-div {
+  flex-grow: 1;
+  overflow: auto;
+
+  .entity-browser {
+
+    table {
+      tr {
+        cursor: pointer;
+      }
+    }
+
+    display: grid;
+    grid-template-rows: 1fr minmax(8em, 1fr);
+    height: 100%;
+
+    .entities {
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .lightbox {
+      .payload {
+        border-bottom: 1px solid blue;
+      }
+    }
+
+    .xray {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 2em;
+
+      .preds {
+        table {
+          width: 100%;
+
+          td {
+            span {
+              white-space: pre;
+            }
+          }
+        }
+
+        overflow: auto;
+      }
+    }
+  }
+}
+
+.journal-page {
+  grid-template-rows: auto 1fr;
+
+  .control {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "query user" "range range";
+    padding: 1rem;
+    width: fit-content;
+    height: fit-content;
+    border: 1px solid;
+    border-radius: 1em;
+
+    .user-filter {
+      grid-area: user;
+    }
+
+    .query {
+      grid-area: query;
+    }
+
+    .range {
+      grid-area: range;
+      display: grid;
+      grid-template-columns: 0fr 1fr 0fr 1fr;
+      grid-gap: 1rem;
+      align-items: center;
+    }
+  }
+
+  .entries {
+    display: grid;
+    grid-template-rows: 1fr 0fr;
+    overflow: auto;
+
+    table {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+}
+
+.model-browser {
+
+  display: flex !important;
+
+  .entity-browser-div {
+    height: 100%;
+
+  }
+}
+
+.admin-page {
+  grid-template-rows: 0fr auto;
+
+  .navigation {
+  }
+
+  .current {
+    .standard-border(black);
+
+    ul {
+      max-height: 50%;
+      overflow-y: auto;
+
+      li {
+        display: grid;
+        grid-template-rows: auto;
+        grid-template-columns: 1fr 1fr 10em 11em;
+
+        span {
+          padding-right: 1em;
+        }
+      }
+    }
+  }
+}
+
+.admin-management {
+  .selector {
+    item-selector {
+      display: block;
+      .standard-border(blue);
+    }
+  }
+}
+
+.user-management {
+  .add-user {
+    form {
+      display: grid;
+    }
+  }
+}
+
+.client-log, [is='client-log'] {
+  .control {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "query user" "range range";
+    padding: 1rem;
+
+    .user-filter {
+      grid-area: user;
+    }
+
+    .query {
+      grid-area: query;
+    }
+
+    .range {
+      grid-area: range;
+      display: grid;
+      grid-template-columns: 0fr 1fr 0fr 1fr;
+      grid-gap: 1rem;
+      align-items: center;
+    }
+  }
+
+}
+
+.reset-password {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+
+  button {
+    a {
+      color: white;
+    }
+  }
+}
+
+jobs-page, [is="jobs-page"] {
+
+  .add-job-modal {
+    .operation {
+      text-align: center;
+      padding-bottom: 10px;
+      font-size: 1.2em;
+      color: @dark-text;
+
+    }
+  }
+
+}

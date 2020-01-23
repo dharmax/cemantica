@@ -1,0 +1,20 @@
+<discussion-page>
+    <discussion if={state.discussionId} root="{state.discussionId}" startLevel="{state.level}"
+                config="{discussionConfig}"/>
+
+    <script>
+
+        import {stateManager} from "../../lib/state-manager";
+
+        export default {
+            onMounted() {
+                const [discussionId, level] = stateManager.context.split(',')
+                this.update({discussionId, level})
+            },
+            discussionConfig: {
+                maxDepth: 10,
+                maxItems: 100
+            },
+        }
+    </script>
+</discussion-page>

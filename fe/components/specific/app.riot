@@ -1,0 +1,162 @@
+<app>
+    <header>
+        <section class="top-header">
+            <div class="title">
+                <a href="/">
+                    <img src="{logo}" alt="{document.title}">
+                    <span>Whisperation</span>
+                </a>
+                <div class="site-slogan">
+                    <h2>whispers of inspiration</h2>
+                    <span>
+                        <h3>We help you to be <strong>&nbsp;creative!</strong>
+                        </h3>
+                    </span>
+                </div>
+            </div>
+
+            <span class="beta">Beta</span>
+            <span class="header-control">
+            <div if="{state.session}">
+                <inbox-widget/>
+               <a href="#my-profile">{state.session.userName} </a>
+                <a class='logout' onclick={logout} title="Logout"><i class="material-icons">exit_to_app</i> </a>
+            </div>
+
+            <span if="{!state.session}">
+                <a href="#login">Login</a>
+                &nbsp;
+                <a href="#signup">Sign up</a>
+            </span>
+        </span>
+        </section>
+        <div class="navigation">
+            <menu-manager>
+                <nav class="menu">
+                    <ul>
+                        <li><a href="#main">Main</a></li>
+                        <template if="{state.session}">
+                            <li><a href="#my-creations">My Creations</a></li>
+                            <li><a href="#my-fellowship">My fellowship</a></li>
+                        </template>
+                        <li><a href="#community">Community</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a onclick="{()=>update({helpOn:true})}">Help</a></li>
+                        <li if="{state.session && state.session.isAdmin}"><a href="/admin.html" target="admin">Admin</a>
+                        </li>
+                    </ul>
+                </nav>
+            </menu-manager>
+        </div>
+    </header>
+
+    <div class="main-frame">
+        <div class="active-module" if={state.currentPage} is={state.currentPage}></div>
+    </div>
+    <div class="help" if="{state.helpOn}">
+        <div class="modal-overlay"></div>
+        <whisperation-help onfinish="{()=>{update({helpOn:false})}}"/>
+    </div>
+    <div class="spinner"/>
+
+    <div class="feedback" onclick="{()=>update({feedbackForm:true})}"><a>Feedback</a></div>
+    <feedback-form if="{state.feedbackForm}" close="{()=>update({feedbackForm:false})}"/>
+
+    <toasters/>
+    <footer>
+        All rights reserved © to<a target="paramita" href="///www.paramita-services.com">Avi Tshuva, Paramita
+        Services</a>2019 <br>
+        All content rights reserved to the original content writers
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+            <input type="hidden" name="cmd" value="_donations"/>
+            <input type="hidden" name="business" value="UYU4PSTP7P65J"/>
+            <input type="hidden" name="item_name" value="Keeping up the good work!"/>
+            <input type="hidden" name="currency_code" value="USD"/>
+            <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0"
+                   name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button"/>
+        </form>
+
+    </footer>
+
+    <script>
+        import Toasters from '../generic/toasters.riot'
+        import dispatcher from '../../lib/dispatcher'
+        import {getSession, logout} from "../../services/session-manager";
+        import {userStore} from '../../viewmodel/user-store'
+        import logo from '../../images/whisperation-logo.svg'
+        import MenuManager from '../generic/menu-manager.riot';
+        import FeedbackForm from '../generic/feedback-form.riot'
+        import {components, initApplicationStates} from "./site-states";
+        import {stateManager} from "../../lib/state-manager";
+        import InboxWidget from '../generic/inbox-widget.riot'
+        import LoginBox from '../generic/login-box.riot'
+        import SignupBox from '../generic/signup-box.riot'
+        import MyProfile from '../generic/my-profile.riot'
+        import Inbox from '../generic/inbox.riot'
+        import DiscussionPage from '../generic/discussion-page.riot'
+        import {baseUrl} from "../../lib/api-helper";
+
+        export default {
+
+            components: {
+                Toasters,
+                MenuManager,
+                FeedbackForm,
+                InboxWidget,
+                LoginBox,
+                SignupBox,
+                MyProfile,
+                Inbox,
+                DiscussionPage,
+                ...components
+
+            },
+            logo,
+            baseUrl,
+            async onMounted() {
+
+                dispatcher.on('state:changed', event => {
+                    this.update({
+                        currentPage: event.data.pageName
+                    })
+                })
+                dispatcher.on('session:login', async () => {
+                    stateManager.restoreState('main')
+                    const session = await getSession()
+                    this.update({session})
+                })
+
+                dispatcher.on('session:dropped', () => {
+                    stateManager.state = 'main'
+                    this.update({session: null})
+                })
+
+                stateManager.addState('login', 'login-box', 'login')
+                stateManager.addState('signup', 'signup-box', /signup/)
+                stateManager.addState('my-profile')
+                stateManager.addState('inbox')
+                stateManager.addState('discussion', 'discussion-page', 'discussion/%')
+
+                initApplicationStates()
+
+                // noinspection JSIgnoredPromiseFromCall
+                try {
+                    await getSession()
+                } catch (e) {
+                    console.log('no session captured')
+                }
+                stateManager.restoreState('main')
+
+                this.update({
+                    showWelcome: true,
+                    helpOn: userStore.isNewVisitor()
+                })
+            },
+            logout() {
+                // noinspection JSIgnoredPromiseFromCall
+                logout()
+            }
+        }
+
+    </script>
+</app>

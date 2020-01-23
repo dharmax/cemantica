@@ -1,0 +1,89 @@
+<pager>
+    <nav class="pager">
+        <a onclick={gotoStart}> <i class="material-icons">first_page</i></a>
+        <a onclick={pageBack}> <i class="material-icons">arrow_back</i></a>
+        <div><input type="number" value="{ currentPage()}" onchange="{gotoPage}" min="1"
+                    max="{lastPage()}"/>
+            /{lastPage()}
+        </div>
+        <a onclick={nextPage}> <i class="material-icons">arrow_forward</i></a>
+        <a onclick={gotoEnd}> <i class="material-icons">last_page</i></a>
+
+    </nav>
+
+    <style>
+        span {
+            cursor: pointer;
+        }
+
+        input {
+            width: 3em;
+            font-size: 1em !important;
+        }
+    </style>
+
+    <script>
+        /**
+         * props:
+         * pageSize - optional.
+         * provider: (from, pageSize) => IReadResult
+         *
+         */
+        export default {
+
+            onMounted() {
+                this.update({
+                    from: 0,
+                    pageSize: this.props.pageSize || 15,
+                    total: 0,
+                })
+                this.props.api && (this.props.api.pager = this)
+                this.gotoStart()
+            },
+
+            currentPage() {
+                return 1 + Math.floor(this.state.from / this.state.pageSize)
+            },
+            lastPage() {
+                return 1 + Math.floor(this.state.total / this.state.pageSize)
+            },
+            gotoStart() {
+                this.update({from: 0})
+                this.updatePage()
+            },
+            gotoEnd() {
+                this.update({from: (this.lastPage() - 0.5) * this.state.pageSize})
+                this.updatePage()
+            },
+            gotoPage(e) {
+                const page = Math.min(e.target.value, this.lastPage()) - 1
+                const from = page * this.state.pageSize
+                this.update({from})
+                this.updatePage()
+
+            },
+            pageBack() {
+                if (this.currentPage() <= 1)
+                    return
+                this.update({
+                    from: Math.max(0, this.state.from - this.state.pageSize)
+                })
+                this.updatePage()
+            },
+            nextPage() {
+                if (this.currentPage() >= this.lastPage())
+                    return
+                const from = Math.min(this.state.from + this.state.pageSize, this.state.total - 1)
+                this.update({from})
+                this.updatePage()
+            },
+            async updatePage() {
+                const {total, totalFiltered} = await this.props.provider(this.state.from || 0, this.state.pageSize)
+                this.update({
+                    total: totalFiltered || total,
+
+                })
+            }
+        }
+    </script>
+</pager>

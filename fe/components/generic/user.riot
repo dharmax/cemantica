@@ -1,0 +1,27 @@
+<user>
+    <div>
+        <img class='user-image' src="{pictureUrl()}" alt="">
+        <a href="#writer/{props.id || props.u.id}">{props.name || props.u.name}</a>
+    </div>
+
+    <script>
+
+        import MaleImage from '../../images/user-male.jpg'
+        import FemaleImage from '../../images/user-female.jpg'
+
+        export default {
+
+            MaleImage,
+            FemaleImage,
+            pictureUrl() {
+                const props = this.props;
+                const u = props.u;
+                return props.pictureUrl || u && u.pictureUrl || (
+                    (props.gender || u && u.gender) === 'male' ? this.MaleImage : this.FemaleImage
+                )
+            }
+        }
+
+
+    </script>
+</user>

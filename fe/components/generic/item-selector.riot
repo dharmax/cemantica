@@ -1,0 +1,87 @@
+<item-selector>
+    <div class="item-selector">
+
+        <span class="search">
+        <input type="text" oninput="{updateList}" maxlength="30" placeholder="{props.label||'search'}"><i
+                class="material-icons">search</i>
+        </span>
+        <table>
+            <thead if="{state.items && state.items.length}">
+            <tr>
+                <td each="f in props.projection">{f}</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr each="{i in state.items}" onclick="{()=>itemClick(i)}" class="{isPreselected(i)?'preselected':''}">
+                <td each="{f in props.projection}">{getField(i,f)}</td>
+            </tr>
+            <tr></tr>
+            </tbody>
+        </table>
+        <div class="control">
+            <button onclick="{()=>selectItem()}" disabled="{!state.preSelectedItem}">Select</button>
+            <button onclick="{cancel}">Cancel</button>
+        </div>
+
+    </div>
+
+    <script>
+
+        /**
+         * Attributes:
+         * - callback
+         * - loader
+         * - projection
+         * - label
+         *
+         */
+
+        import {throttle} from "../../lib/utils";
+
+        let filterInput = null
+
+        let updater
+        export default {
+            async onMounted() {
+                filterInput = this.$('input')
+                this.state.items = []
+                this.loadItems()
+                updater = throttle(this.loadItems, 250, this)
+
+            },
+            async loadItems() {
+                const filter = filterInput.value
+                const items = await this.props.loader(filter)
+                this.update({items})
+            },
+            getField(i, f) {
+                return i[f]
+            },
+            updateList() {
+                updater()
+            },
+            isPreselected(i) {
+                return this.state.preSelectedItem === i
+            },
+            itemClick(i) {
+                if (this.isPreselected(i))
+                    this.selectItem(i)
+                else
+                    this.preSelectItem(i)
+            },
+            preSelectItem(i) {
+                this.update({preSelectedItem: i})
+            },
+            selectItem(i) {
+                i = i || this.state.preSelectedItem
+                this.props.callback(i)
+            },
+            cancel() {
+                this.props.callback(null)
+            }
+        }
+
+    </script>
+
+
+</item-selector>

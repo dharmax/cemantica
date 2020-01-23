@@ -1,0 +1,99 @@
+<app-admin>
+    <header class="top-header">
+        <span class="title" style="color:black">{document.title}</span>
+        <menu-manager>
+        <span class="navigation">
+                <nav if="{state.session}">
+                    <ul>
+                        <li><a href="#browseModel">Model Browser</a></li>
+                        <li><a href="#admin">Admin</a></li>
+                        <li><a href="#jobs-page">Jobs</a></li>
+                        <li><a href="#journal">Journal</a></li>
+                        <li><a href="/" target="app">Application</a></li>
+                    </ul>
+                </nav>
+        </span>
+        </menu-manager>
+        <span class="header-control">
+            <span if="{state.session}">
+            <a href="#my-profile">{state.session.userName} </a>
+            <button onclick={logout}>logout</button>
+            </span>
+
+            <span if="{!state.session}">
+            <a href="#login">Login</a> <a href="#signup">Sign up</a>
+            </span>
+        </span>
+
+    </header>
+    <div class="main-frame">
+        <div class="active-module" if={state.currentPage} is={state.currentPage}/>
+    </div>
+    <toasters/>
+
+    <div/>
+
+    <script>
+        import ModelBrowser from './model-browser.riot'
+        import LoginBox from '../login-box.riot'
+        import Toasters from '../toasters.riot'
+        import AdminPage from './admin-page.riot'
+        import JobsPage from './jobs-page.riot'
+        import dispatcher from '../../../lib/dispatcher'
+        import {getSession, logout} from "../../../services/session-manager";
+        import JournalPage from './journal-page.riot'
+        import {stateManager} from "../../../lib/state-manager";
+        import MenuManager from '../menu-manager.riot'
+
+        export default {
+            components: {
+                ModelBrowser,
+                LoginBox,
+                Toasters,
+                AdminPage,
+                JournalPage,
+                MenuManager,
+                JobsPage
+            },
+            async onMounted() {
+                dispatcher.on('state:changed', event => {
+                    this.update({
+                        currentPage: event.data.pageName
+                    })
+                })
+                dispatcher.on('session:login', async () => {
+                    this.update({session: await getSession()})
+                    stateManager.restoreState('journal')
+                })
+                dispatcher.on('session:dropped', () => {
+                    stateManager.state = 'main'
+                    this.update({session: null})
+                })
+
+                dispatcher.on('state:changed', e => {
+                    this.update({
+                        currentPage: e.data.pageName
+                    })
+                })
+                stateManager.addState('browseModel', 'model-browser', /browseModel/)
+                stateManager.addState('admin', 'admin-page', 'admin/%')
+                stateManager.addState('journal', 'journal-page', /journal/)
+                stateManager.addState('login', 'login-box', /login/)
+                stateManager.addState('job-management', 'jobs-page')
+                // noinspection JSIgnoredPromiseFromCall
+                try {
+                    await getSession()
+                } catch (e) {
+                    console.log('no session captured')
+                }
+                // stateManager.restoreState('journal')
+
+            },
+            logout() {
+                // noinspection JSIgnoredPromiseFromCall
+                logout()
+            }
+        }
+
+    </script>
+</app-admin>

@@ -1,0 +1,58 @@
+<feedback-form>
+    <div class="lightbox">
+
+        <div class="content">
+            <div class="title">
+                User Feedback
+            </div>
+            <div class="body">
+                <p>
+                    Your feedback is welcome and important to me.
+                    <br>
+                    Please report bugs, provide suggestions, share thoughts and ideas and make your voice sound :-)
+                    <br>
+                    Note that it is best if you logged in first...
+                </p>
+                    Type:
+                    <select ref="type">
+                        <option value="Bug">Bug</option>
+                        <option value="Question">Question</option>
+                        <option value="Suggestion">Suggestion</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <textarea ref="text" cols="30" rows="10"></textarea>
+            </div>
+            <div class="control">
+                <button class="send" onclick="{sendFeedback}">Submit</button>
+                <button class="close" onclick="{props.close}">Abort</button>
+            </div>
+
+        </div>
+    </div>
+    <script>
+
+
+        import {userStore} from "../../viewmodel/user-store";
+        import {Alert} from "../../services/alert-service";
+        import {isLoggedIn} from "../../services/session-manager";
+
+        /**
+         * props:
+         * close - a callback for closing the form
+         */
+        export default {
+            onMounted() {
+            },
+            isLoggedIn,
+            async sendFeedback() {
+
+                const fields = this.collectValues()
+                await userStore.sendFeedback(fields)
+                Alert('Feed sent - thank you kindly!', 'info')
+                this.props.close()
+            }
+        }
+
+
+    </script>
+</feedback-form>

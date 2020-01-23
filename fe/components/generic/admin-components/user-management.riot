@@ -1,0 +1,79 @@
+<user-management>
+    <section class="user-management">
+
+
+        <button onclick="{openAddUser}">Add User</button>
+
+        <div class="add-user" if="{state.adding}">
+            <div class="modal-overlay"></div>
+            <div class="lightbox">
+                <div class="content">
+                    <div class="title">
+                        Add user
+                    </div>
+                    <div class="body">
+                        <form class="new-user">
+                            <input ref='name' placeholder="Full name" type="text" required>
+                            <input ref='email' type="email" placeholder="Email" required>
+                            <input ref='password' type="password" placeholder="Password" required>
+                        </form>
+                    </div>
+                    <div class="control">
+                        <button onclick="{addUser}">Confirm</button>
+                        <button onclick="{closeAddUser}">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <item-selector callback="{viewUser}" loader="{userLoader}" label="search user"
+                       projection="{['name','email']}"></item-selector>
+
+
+    </section>
+    <script>
+
+        import {post} from "../../../lib/api-helper";
+        import ItemSelector from "../item-selector.riot"
+        import {Alert} from "../../../services/alert-service";
+        import {collectValues} from "../../../lib/utils";
+
+        export default {
+
+            components: {
+                ItemSelector,
+            },
+            onMounted() {
+                // noinspection JSIgnoredPromiseFromCall`
+            },
+            openAddUser() {
+                this.update({adding: true})
+            },
+            async addUser() {
+                const form = this.$('.new-user')
+                const values = this.collectValues(form)
+
+                const user = await post(`users/new`, values)
+                Alert(`User ${user.name} created`, 'info')
+                this.closeAddUser()
+            },
+            closeAddUser() {
+                this.update({adding: false})
+            },
+            userLoader(filter) {
+                if (!filter)
+                    return []
+                return post('users/search', {string: filter, projection: ['name', 'email', 'id']})
+            },
+            viewUser(user) {
+
+            }
+
+        }
+
+
+    </script>
+
+
+</user-management>

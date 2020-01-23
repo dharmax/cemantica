@@ -1,0 +1,25 @@
+<html>
+<script>
+    let url = localStorage.nextUrl || ''
+    let sessionToken = getQueryParam('sessionToken')
+    if (sessionToken)
+        window.location.href = `${url}?sessionToken=${sessionToken}`
+    else {
+        let error = getQueryParam('error')
+        let errorType = getQueryParam('errorType')
+        window.location.href = `${url}?error=${error}&errorType=${errorType}`
+    }
+
+    function getQueryParam(name, url) {
+        if (!url) {
+            url = window.location.href;
+        }
+        name = name.replace(/[\[\]]/g, "\\$&");
+        const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+</script>
+</html>

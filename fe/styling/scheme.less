@@ -1,0 +1,67 @@
+@standard-font-family: 'Cherry Swash', cursive;
+@inner-font-family: 'Courgette', cursive;
+
+@mobile-width0: 1023px;
+@mobile-width: 1024px;
+
+
+body {
+  font-family: @standard-font-family;
+  background-image: url("../images/paper2.jpg");
+}
+
+textarea {
+  font-family: @inner-font-family;
+}
+
+@action-background: #ebbd72;
+@label-color: #5483df;
+@default-text-color: #1f094c;
+@dark-text: darkblue;
+@dark-background: #1f094c;
+@light-background: #f2f5c2;
+@semi-transparent-background: #73a09c66;
+@field-border-color: blue;
+@modal-overlay-background: #6aa6cc80;
+@text-over-dark-color: white;
+@sub-title-color: #cc3832;
+@selected-menu-item-color: rgba(170, 219, 255, 0.95);
+@main-background: hsla(244, 81%, 80%, 0.28);
+@nav-active-bgcolor: rgba(170, 219, 255, 0.95);
+@inbox-background: #ffd1ab;
+@discussion-background-color: rgba(255, 255, 164, 0.53);
+@discussion-post-background-color: lighten(@light-background, 10%);
+
+.app {
+  .action, button {
+    background-color: #fce0c3;
+    font-family: @inner-font-family;
+    color: #6a3e03;
+    border-radius: 0 0.5em 0.5em 0.5em;
+    border: 1px solid #6a3e03;
+    box-shadow: 2px 2px 2px 2px #a8a2f5;
+    transform: rotateZ(5deg);
+  }
+}
+
+@shadow1: 10px 10px 5px grey;
+@lightbox-border: 1px solid orange;
+@lightbox-background-base-color: #aad0ff;
+@lightbox-background: linear-gradient(45deg, @lightbox-background-base-color, lighten(@lightbox-background-base-color, 20%));
+@zippy-background: @lightbox-background;
+@lightbox-title-bg: darken(@lightbox-background-base-color, 20%);
+@lightbox-text-color: contrast(@lightbox-background-base-color);
+
+@textarea-shadow: inset 3px 4px 3em 1px rgba(255, 165, 0, 0.57), 2px 2px 25px 2px #4e7773; //border: none;
+@textarea-outline-color: orange;
+
+.standard-border( @c: transparent ) {
+  border: 1px solid @c;
+  border-radius: 0.5em;
+  margin: 1rem;
+  padding: 1rem;
+}
+
+label {
+  color: @label-color;
+}

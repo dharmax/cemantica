@@ -1,0 +1,45 @@
+<time-picker>
+
+    <input type="text" oninput="{onChange}" disabled="{props.disabled}">
+
+    <input if="{props.range=='true'}" type="text">
+    <script>
+
+        import picker from 'flatpickr'
+        // noinspection ES6UnusedImports
+        import css from 'flatpickr/dist/flatpickr.min.css'
+        import rangePlugin from "flatpickr/dist/plugins/rangePlugin";
+
+        let mainElement, secondElement
+        export default {
+            onMounted() {
+                const inputs = this.$$('input')
+                mainElement = inputs[0]
+                secondElement = inputs[1]
+                mainElement.value = this.props.value
+                secondElement && (secondElement.value = this.props.value2)
+                const conf = this.props
+                if (this.props.range === 'true')
+                    conf.plugins = [new rangePlugin({input: secondElement})]
+                this.widget = picker(mainElement, conf)
+                if (this.props.api)
+                    this.props.api.api = this
+            },
+            getValue() {
+                return mainElement && mainElement.value && mainElement.value.length && mainElement.value || null
+            },
+            clear() {
+                this.widget.clear()
+            },
+            onChange(e) {
+                const callback = this.props.oninput || this.props.onchange
+                const value = e.target.value;
+                this.root.value = value
+                if (!callback)
+                    console.warn('no onchange listener to date ' + value)
+                else
+                    callback(value)
+            }
+        }
+    </script>
+</time-picker>

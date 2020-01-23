@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.cache/
+fe/.cache/*
+.*/
+*.js
+*.map
+*.css
+!fe/webpack.config.js
+Test Results - test_all.html
+.directory
+workspace.code-workspace
+
+
+!.*/
+logs/
+fe/.cache/

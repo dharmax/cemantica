@@ -1,0 +1,88 @@
+<discussion>
+    <!--    <form class="order" onclick="{changeOrder}" if="{state.level <1}">-->
+    <!--        <input type="radio" name="order" id="newest" value="newest" checked><label for="newest">Newest-->
+    <!--        first</label>-->
+    <!--        <input type="radio" name="order" id="oldest" value="oldest"><label for="oldest"> Oldest-->
+    <!--        first</label>-->
+    <!--    </form>-->
+    <template if="{state.level >= props.config.maxDepth}">
+        <a class="more-depth" href="/#discussion/{props.parentId},{state.level}" target="{props.parentId}">Click for
+            more </a>
+    </template>
+    <template if="{state.level < props.config.maxDepth}">
+        <template each="{post in state.posts}">
+            <discussion-post post="{postIt}" parentId={props.root} data="{post}" config="{props.config}"
+                             level="{state.level+1}"/>
+        </template>
+        <template if="{state.more}">
+            <a class="more-items" href="/#discussion/{props.root}" target="{props.root}"
+               title="open in discussion page">Open separately
+                for more</a>
+        </template>
+    </template>
+    <script>
+
+        import {discussionStore} from '../../viewmodel/discussion-store.ts'
+        import DiscussionPost from './dicussion-post.riot'
+        import dispatcher from "../../lib/dispatcher";
+
+        /**
+         * Note that this component should be  registered in the main, because it is recursive
+         * props:
+         * root: the id of the entity this discussion is tied to with "discusses" predicate
+         * level: the current nesting level
+         * startLevel: the real nesting level (used in discussion-page)
+         * maxDepth: (optional) - how deep nesting to show as-is
+         *
+         * config: (optional) -   overloading of default discussion configuration
+         *      {
+         *      maxItems:  - how many items to show as-is
+         *      newestFirst: order...
+         *      }
+         * from: (internal)
+         */
+        export default {
+
+            components: {
+                DiscussionPost,
+            },
+            onMounted() {
+                this.update({level: this.props.level || 0})
+                this.loadPosts()
+                this.eventHandler = dispatcher.on('discussion-post:sent', e => {
+                    if (e.data.root === this.props.root)
+                        this.loadPosts()
+                })
+            },
+            onUnmounted() {
+                dispatcher.off(this.eventHandler)
+            },
+            self: this,
+            async loadPosts() {
+                const from = this.props.from || 0
+                const count = this.props.config.maxItems || 50
+                const discussionsResult = await discussionStore.load({
+                    from,
+                    count,
+                    sort: this.props.config.order === 'newest' ? 'touched:-1' : 'touched:1'
+                }, this.props.root)
+                this.update({
+                    newPost: false,
+                    posts: discussionsResult.items,
+                    more: discussionsResult.items < discussionsResult.totalFiltered
+                })
+            },
+            changeOrder(e) {
+                const form = this.$('.order')
+                this.props.config.order = form.order.value
+                this.loadPosts()
+            },
+            actualLevel() {
+                return (this.state.level || 0) + (this.props.startLevel || 0)
+            },
+
+        }
+
+
+    </script>
+</discussion>

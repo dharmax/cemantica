@@ -1,0 +1,38 @@
+<my-fellowship>
+    <div class="my-fellowship">
+        <H1>Writers I follow</H1>
+        <div class="followed">
+            <template each="{u in state.followed}">
+                <user u="{u}"/>
+            </template>
+        </div>
+
+        <h1>Writers who follow me</h1>
+        <div class="following">
+            <template each="{u in state.following}">
+                <user u="{u}"/>
+            </template>
+        </div>
+    </div>
+    <script>
+
+        import {userStore} from '../../viewmodel/user-store'
+        import User from '../generic/user.riot'
+
+        export default {
+            components: {
+                User
+            },
+            async onMounted() {
+
+                const fellowship = await userStore.getFellowship()
+                this.update({
+                    followed: fellowship.subscriptions,
+                    following: fellowship.subscribers
+                })
+
+            }
+        }
+    </script>
+
+</my-fellowship>

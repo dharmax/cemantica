@@ -1,0 +1,250 @@
+<jobs-page>
+
+    <section class="job-list">
+        <h1>Scheduled Jobs</h1>
+        <table>
+            <thead>
+            <tr>
+                <td>Prototype</td>
+                <td>Timing</td>
+                <td>Recurring</td>
+                <td>Control</td>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr each="{j in state.schedule}">
+                <td>{j.jobPrototypeName}</td>
+                <td>{j.cron}</td>
+                <td>{j.options.recurring}</td>
+                <td class="control">
+                    <i class="material-icons" onclick="{()=>removeFromSchedule(j)}" title="delete scheduler entry">alarm_off</i>
+                </td>
+            </tr>
+            <tr/>
+            </tbody>
+        </table>
+    </section>
+
+    <div class="add-job-modal" if="{state.selectedPrototype}">
+        <div class="modal-overlay"></div>
+        <div class="lightbox">
+            <div class="content">
+                <div class="title">
+                    Schedule a new job
+                </div>
+                <div class="body">
+                    <form class="new-job">
+                        <label>
+                            Prototype: <span ref="prototypeName">{state.selectedPrototype}</span>
+                        </label>
+                        <label>
+                            Scheduling
+                            <input placeholder="Cron String" ref='cron'
+                                   required validator="{cronValidator()}"> <a href="https://crontab.guru/">?</a>
+                        </label>
+                        <label>
+                            One time only?
+                            <input ref="once" type="checkbox">
+                        </label>
+                    </form>
+                </div>
+                <div class="control">
+                    <button onclick="{()=>scheduleJob()}">Schedule it</button>
+                    <button onclick="{()=>update({selectedPrototype:null})}">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="add-prototype-modal" if="{state.selectedOperation}">
+        <div class="modal-overlay"></div>
+        <div class="lightbox">
+            <div class="content">
+                <div class="title">
+                    Define a job prototype
+                </div>
+                <div class="body">
+                    <form class="new-prototype">
+                        <label>
+                            Operation: <span ref="operation">{state.selectedOperation.name}</span>
+                        </label>
+
+                        <label>
+                            Name
+                            <input max="40" min="1" placeholder="Unique name" ref='name' required>
+                        </label>
+                        <label>
+                            Description
+                            <textarea ref="description" required/>
+                        </label>
+                        <label>
+                            Data
+                            <textarea ref="data" rows="10"/>
+                        </label>
+                    </form>
+                </div>
+                <div class="control">
+                    <button onclick="{()=>addPrototype(state.selectedOperation)}">Add prototype</button>
+                    <button onclick="{()=>update({selectedOperation:null})}">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="job-prototypes">
+        <h1>Job Prototype Inventory</h1>
+        <table>
+            <thead>
+            <tr>
+                <td>Name</td>
+                <td>Operation</td>
+                <td>Data</td>
+                <td>Control</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr each="{e in state.prototypes }">
+                <td>{e.name}</td>
+                <td>{e.operationName}</td>
+                <td style="white-space: pre">{JSON.stringify(e.data, null, 1)}</td>
+                <td>
+                    <i class="material-icons" onclick="{()=>update({selectedPrototype:e.name})}">alarm_add</i>
+                    <i class="material-icons" onclick="{()=>executePrototypeNow(e)}">directions_run</i>
+                    <i class="material-icons" onclick="{()=>editPrototype(e)}">edit</i>
+                    <i class="material-icons" onclick="{()=>deletePrototype(e)}">delete</i>
+                </td>
+            </tr>
+            <tr/>
+            </tbody>
+        </table>
+    </div>
+    <div class="available-operations">
+        <h1>Job Operations Inventory</h1>
+        <table>
+            <thead>
+            <tr>
+                <td>Name</td>
+                <td>Description</td>
+                <!--                <td>Data schema</td>-->
+                <td>Control</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr each="{e in state.operations }">
+                <td>{e.name}</td>
+                <td style="white-space: pre-wrap">{e.description}</td>
+                <!--                <td>{e.schema}</td>-->
+                <td>
+                    <i class="material-icons" onclick="{()=>{update({selectedOperation:e})}}">playlist_add</i>
+                </td>
+            </tr>
+            <tr/>
+            </tbody>
+        </table>
+    </div>
+    <style>
+        .material-icons {
+            cursor: pointer;
+        }
+
+        .material-icons:hover {
+            color: blue;
+        }
+
+        .new-job, .new-prototype {
+            display: grid;
+        }
+
+        .new-job, .new-prototype label {
+            display: flex;
+            flex-direction: column;
+        }
+
+        :host {
+            margin: 10% 20%;
+            display: flex;
+        }
+
+    </style>
+    <script>
+
+
+        import {jobsStore} from "../../../viewmodel/jobs-store";
+        import {Alert, Info} from "../../../services/alert-service";
+        import {isValidCron} from "cron-validator";
+
+        export default {
+            async onBeforeMount() {
+                this.loadData()
+            },
+            async loadData() {
+                const [schedule, prototypes, operations] = await Promise.all([jobsStore.getSchedule(), jobsStore.getPrototypes(), jobsStore.getOperations()])
+                this.update({
+                    schedule, prototypes, operations,
+                    selectedOperation: null, selectedPrototype: null
+                })
+            },
+            onMounted() {
+                this.update()
+            },
+            async removeFromSchedule(job) {
+                await jobsStore.remove(job.id, 'schedule')
+                Info(`Job ${job.jobName} deleted from scheduler`)
+                this.loadData()
+            },
+            async deletePrototype(prototype) {
+                await jobsStore.remove(prototype.name, 'prototype')
+                Info(`Job Prototype ${prototype.name} deleted`)
+                this.loadData()
+            },
+            edit(job) {
+                Error('Unimplemented front-end')
+            },
+            async executePrototypeNow(prototype) {
+                await jobsStore.operation('executeNow', {prototypeName: prototype.name})
+                Info(`Executing job ${prototype.name}`)
+            },
+            isValidCron,
+            cronValidator() {
+                return (v, context) => {
+                    v = v.trim();
+                    return context.isValidCron(v) || v === ''
+                }
+            },
+            async addPrototype() {
+                const values = this.collectValues(this.$('.new-prototype'))
+                if (values._errors) {
+                    Alert(values._errors)
+                    return
+                }
+                values.data = values.data.trim()
+                if (!values.data.length)
+                    values.data = '{}'
+                else if (!values.data.startsWith('{'))
+                    values.data = '{' + values.data + '}'
+                values.data = JSON.parse(values.data)
+                await jobsStore.create({...values}, 'prototype')
+                this.loadData()
+            },
+            async scheduleJob() {
+                const values = this.collectValues(this.$('.new-job'))
+                if (values._errors) {
+                    Alert(values._errors)
+                    return
+                }
+
+                await jobsStore.create({
+                    ...values
+                }, 'schedule')
+                Info('Job added')
+                this.loadData()
+            }
+        }
+    </script>
+
+
+</jobs-page>

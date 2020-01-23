@@ -1,0 +1,157 @@
+<journal-page>
+    <div class="journal-page">
+        <div class="control">
+            <div class="user-filter">
+                <h3>User filter</h3>
+                <div if="{state.showUser}">
+                    {state.showUser.email}
+                    <i class="material-icons" onclick="{resetUserFilter}">cancel</i>
+                </div>
+                <zippy title="Select user" ref="{userZippy}">
+                    <item-selector callback="{setUserFilter}" loader="{userLoader}" label="select user"
+                                   projection="{['name','email']}"></item-selector>
+                </zippy>
+            </div>
+            <div class="query">
+                <h3>Mongo filter</h3>
+                <input type="text" onchange="{queryChanged}" placeholder="search criteria">
+            </div>
+
+            <div class="range">
+                <div class="pretty p-switch p-fill">
+                    <input type="checkbox" onchange="{toggle('start')}" value="{state.withStart}">
+                    <div class="state"><label>From</label></div>
+                </div>
+                <time-picker onchange="{changeRange('start')}" enableTime={true} disabled="{!state.withstart}"
+                             api="{startApi}"></time-picker>
+                <div class="pretty p-switch p-fill">
+                    <input type="checkbox" onchange="{toggle('end')}" value="{state.withend">
+                    <div class="state"><label>To</label></div>
+                </div>
+                <time-picker onchange="{changeRange('end')}" enableTime={true} disabled="{!state.withend}"
+                             api="{endApi}"></time-picker>
+            </div>
+
+        </div>
+        <div class="entries">
+            <table>
+                <thead>
+                <tr>
+                    <td>time</td>
+                    <td>action</td>
+                    <td>doer</td>
+                    <td>object</td>
+                    <td>data</td>
+                    <td>res</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr each="{e in state.entries}">
+                    <td><span>{e.time}</span></td>
+                    <td><span>{e.action}</span></td>
+                    <td><span>{e.userId}</span></td>
+                    <td><span>{e.entityType + (e.entityId ? (':' + e.entityId) : '')}</span></td>
+                    <td title="{e.dataFull}"><span>{e.dataShort}</span></td>
+                    <td><span>{e.result}</span></td>
+                </tr>
+                <tr>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+
+
+        import {post} from "../../../lib/api-helper";
+        import TimePicker from '../time-picker.riot'
+        import Zippy from '../zippy.riot'
+        import ItemSelector from '../item-selector.riot'
+        import {Alert} from "../../../services/alert-service";
+
+        let query = {}
+        export default {
+
+            components: {
+                TimePicker,
+                Zippy,
+                ItemSelector
+            },
+            startApi: {},
+            endApi: {},
+            userZippy: {},
+            onMounted() {
+                this.update({
+                    entries: []
+                })
+                this.loadJournal()
+            },
+            async loadJournal() {
+                if (!query.from)
+                    delete query.from
+                const results = await post('admin/journal/query', query).then(r => r.map(e => {
+                    e.dataFull = JSON.stringify(e.data)
+                    e.dataShort = e.dataFull ? e.dataFull.substr(0, 25) : ''
+                    return e
+                }))
+                this.update({
+                    entries: results
+                })
+            },
+            queryChanged(e) {
+                try {
+                    const queryText = e && e.target.value;
+                    const freeQuery = JSON.parse(queryText)
+                    Object.assign(query.query, {query: freeQuery})
+
+                } catch (e) {
+                    Alert(e)
+                }
+                this.loadJournal()
+            },
+            setUserFilter(user) {
+                if (!query.query)
+                    query.query = {}
+                query.query.userId = user.id
+                this.userZippy.api.close()
+                this.update({showUser: user})
+                this.loadJournal()
+
+            },
+            resetUserFilter() {
+                query.query && delete query.query.userId
+                this.userZippy.api.close()
+                this.update({showUser: undefined})
+                this.loadJournal()
+            },
+
+            userLoader(filter) {
+                if (!filter)
+                    return []
+                return post('users/search', {string: filter, projection: ['name', 'email', 'id']})
+            },
+            toggle(which, e) {
+                const self = this
+                return e => {
+                    const api = self[which + 'Api'].api;
+                    this.update({['with' + which]: e.target.checked})
+                    if (!e.target.checked) {
+                        api.clear()
+                        delete query[which == 'start' ? 'from' : 'to']
+                    }
+                    this.loadJournal()
+                }
+            },
+            changeRange(which, time) {
+                return time => {
+                    const t = time && time.length && new Date(time)
+                    if (t)
+                        query[which == 'start' ? 'from' : 'to'] = t
+                    this.loadJournal()
+                }
+            },
+        }
+
+    </script>
+</journal-page>

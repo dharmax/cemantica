@@ -1,0 +1,36 @@
+<menu-manager>
+    <div class="openner" onclick="{toggle}"><i class="material-icons">menu</i></div>
+
+    <span class="the-menu {state.open}">
+    <slot/>
+    </span>
+
+    <script>
+        import dispatcher from "../../lib/dispatcher";
+
+        export default {
+            onMounted() {
+
+                dispatcher.on('state:changed', e => {
+                    const nodes = this.$$('a')
+
+                    const route = e.data.route
+                    nodes.forEach(n => {
+                        if (n.hash.match(route))
+                            n.classList.add('selected')
+                        else
+                            n.classList.remove('selected')
+                    })
+                    this.update({open: 'closed'})
+                })
+            },
+            toggle() {
+                const isOpen = this.state.open && this.state.open !== 'closed'
+                this.update({open: isOpen ? 'closed' : 'open'})
+            }
+        }
+
+
+    </script>
+
+</menu-manager>

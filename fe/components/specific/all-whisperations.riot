@@ -1,0 +1,40 @@
+<all-whisperations>
+
+    <div>
+
+        <div class="whisperations">
+            <whisperation each="{w in state.whisperations}" data="{w}" role="list"/>
+            <span class="add">
+                <a href="#create-whisperation">Write a new one!</a>
+            </span>
+        </div>
+        <pager provider="{loadWhisperations}" api="{pagerApi}"/>
+
+    </div>
+    <script>
+
+        import Pager from '../generic/pager.riot'
+        import Whisperation from './whisperation.riot'
+        import {whisperationStore} from '../../viewmodel/whisperations-store'
+
+        export default {
+            components: {
+                Pager,
+                Whisperation
+            },
+            pagerApi: {},
+            onMounted() {
+                this.pagerApi.pager.gotoStart()
+            },
+
+            async loadWhisperations(from, count) {
+                const result = await whisperationStore.load({from, count})
+                this.update({whisperations: result.items})
+                return result
+            }
+        }
+
+    </script>
+
+
+</all-whisperations>

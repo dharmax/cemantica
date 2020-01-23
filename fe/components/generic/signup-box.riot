@@ -1,0 +1,101 @@
+<signup-box class="data-form">
+
+    <section class="signup form-section">
+        <div class="form">
+            <h1>Sign-Up Form</h1>
+
+            <div>
+                <label>{localize('Full name')}</label>
+                <input ref="name" name="name" pattern=".\{5,30\}" required title="5 characters minimum" type="text">
+            </div>
+            <div>
+                <label>{localize('Email')}</label>
+                <input ref="email" name="email" required type="email">
+            </div>
+            <!--
+                            <div>
+                                <label>{localize('phone')}</label>
+                                <input type="tel" name="phone" pattern="^\+?[0-9()-]+$" required>
+                            </div>
+            -->
+            <div>
+                <label>{localize('password')}</label>
+                <input ref="pw1" minlength="6" name="password" required type="password" autocomplete="new-password">
+            </div>
+            <div>
+                <label>{localize('password again')}</label>
+                <input ref="pw2" minlength="6" name="password2" required type="password" autocomplete="new-password">
+            </div>
+            <div>
+                <span>
+                    <input ref="remember" name="remember" type="checkbox">
+                    <span>{localize('Remember me on this computer')}</span>
+                </span>
+            </div>
+            <button class="signup" onclick={signup}>Sign up</button>
+            <br>
+            <div class="already-registered">
+                <span>I'm already registered. Please <a href="#login">Let me login</a></span>
+            </div>
+        </div>
+    </section>
+    <div class="confirm-codes" if="{state.validateSignup}">
+        <div class="modal-overlay"></div>
+        <div class="lightbox">
+            <div class="content">
+                <div class="title">
+                    Validate sign up
+                </div>
+                <div class="body">
+                    <form class="new-user">
+                        <span><label>Email code:</label><input max="9999" min="1000" type="number" ref="emailCode"
+                                                               required> </span>
+                        <!--<span><label>SMS code:</label><input max="9999" min="1000" type="number" ref="smsCode" required> </span>-->
+                    </form>
+                </div>
+                <div class="control">
+                    <button onclick="{confirmCodes}">Confirm</button>
+                    <button onclick="{cancelSignup}">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        import {Alert} from '../../services/alert-service'
+        import {signup, finalSignupPhase} from "../../services/session-manager";
+        import {hash} from 'bcryptjs'
+        import {stateManager} from "../../lib/state-manager";
+
+        export default {
+            localize: s => s,
+            async signup() {
+
+                const fields = this.collectValues()
+                if (fields.pw1 !== fields.pw2) {
+                    Alert('Passwords must match')
+                    return
+                }
+                if (fields._errors)
+                    return
+
+                fields.password = await hash(fields.pw1, 10)
+                const remember = fields.remember;
+                ['pw1', 'pw2', 'remember'].forEach(f => delete fields[f])
+                this.token = await signup(fields, remember)
+
+                this.update({validateSignup: true})
+            },
+            async confirmCodes() {
+                const fields = this.collectValues('.confirm-codes')
+                if (fields._errors)
+                    return
+                const session = await finalSignupPhase(fields.emailCode, fields.smsCode, this.token)
+                stateManager.setState('my-profile')
+            },
+            cancelSignup() {
+                stateManager.setState('main')
+            }
+        }
+    </script>
+</signup-box>

@@ -1,0 +1,78 @@
+<message-viewer>
+
+    <div class="lightbox">
+
+        <div class="content" if="{state.m}">
+            <div class="title">
+                Notification
+            </div>
+            <div class="body">
+                Created at {localDate(props.message._created)} (about {relativeTime(props.message._created)})
+                <p>
+                <a if="{related.by}" target="{related.subject.link}" href="#{related.by.link}">
+                    {related.by.label}</a> {' '+m.eventName+' '}
+                <span if="{related.subject}">
+                    <a target="{related.subject.link}" href="#{related.subject.link}">{related.subject.label}</a>
+                </span>
+                </p>
+                <p>
+                {m.message}
+                </p>
+                <div each="{(v,k) in m.variables}">{k} {v}</div>
+                <br>
+                <div each="{(v,k) in otherRelated}">{k} {v}</div>
+            </div>
+            <div class="control">
+                <button onclick="{props.onClose}">close</button>
+                <button onclick="{erase}">Delete</button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>/**
+     * props:
+     * message: the notification object
+     * onClose: close callback
+     */
+    import {userStore} from "../../viewmodel/user-store";
+    import {Info} from "../../services/alert-service";
+    import {displayableHeader, mapRelated} from "../../lib/inbox-helper";
+    import {localDate} from "../../lib/utils";
+    import {relativeTime} from "short-relative-time";
+
+    let timer
+    export default {
+        onMounted() {
+            timer = setTimeout(() => {
+                userStore.setRead(this.props.message.id)
+            }, 2200)
+            const m = this.m = this.props.message
+            m.relatedLabels = m.related.reduce((a, c) => {
+                a[c.role] = c
+                return a
+            }, {})
+            this.related = mapRelated(m.related)
+            this.otherRelated = {...this.related}
+            delete this.otherRelated.by
+            delete this.otherRelated.subject
+
+            this.update({m})
+        },
+        relativeTime,
+        localDate,
+        onUnmounted() {
+            clearTimeout(timer)
+        },
+        displayableHeader: displayableHeader,
+        async erase() {
+            await userStore.deleteNotification(this.props.message.id)
+            Info('Notification deleted')
+            this.props.onClose()
+        }
+
+    }
+    </script>
+
+</message-viewer>

@@ -1,0 +1,146 @@
+<composer>
+
+    <div class="composer-container">
+        <whisperation if="{state.whisperation}" data="{state.whisperation}" role="reminder"/>
+        <div class="composer" onchange="{savePieceIfAuto}">
+
+            <section class="title">
+                <div>Title:&nbsp; <input type="text" minlength="3" ref="title" required></div>
+                <div class="sub-title">
+                    <select ref="language" onchange="{updateLanguage}">
+                        <option value="en">English</option>
+                        <option value="he">עברית</option>
+                    </select>
+                    <select ref="type">
+                        <option value="poem">Poem</option>
+                        <option value="story">Story</option>
+                        <option value="article">Article</option>
+                    </select>
+                </div>
+            </section>
+
+            <textarea ref="text" minlength="20" oninput="{handleOnInput}" required/>
+            <div class="control">
+                <select ref="status" class="status" value="{state.piece ? state.piece.status : 'draft'}">
+                    <option value="draft">Draft</option>
+                    <option value="published">Public</option>
+                    <option value="limited">Limited</option>
+                    <option value="private">Private</option>
+                    <option value="hidden">Hidden</option>
+                </select>
+                <template if="{!state.autoSaveOn})">
+                    <button onclick="{savePiece}">Create</button>
+                    <button onclick="{cancel}">Cancel</button>
+                </template>
+                <div class="save-notice">
+                    {state.saveNotice}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+
+        import {pieceStore} from "../../viewmodel/piece-store";
+        import {whisperationStore} from "../../viewmodel/whisperations-store";
+        import {stateManager} from "../../lib/state-manager";
+        import {Alert, Info} from "../../services/alert-service";
+        import {getSession} from "../../services/session-manager";
+        import Whisperation from './whisperation.riot'
+        import {throttle} from "../../lib/utils";
+
+        export default {
+
+            components: {
+                Whisperation
+            },
+            async onMounted() {
+                let wid, piece = null
+                const session = await getSession()
+                if (!session)
+                    location.hash = 'login'
+                const mode = stateManager.getState().mode;
+                switch (mode) {
+                    case 'create':
+                        wid = stateManager.context;
+                        break
+                    case 'edit':
+                        piece = await pieceStore.getEntity(stateManager.context)
+                        wid = piece.whisperation.id
+                        const fields = this.refNodes()
+                        for (let k of Object.keys(fields))
+                            fields[k].value = piece[k];
+                        [fields.text, fields.title].forEach(n => {
+                            n.style.direction = piece.language === 'he' ? 'rtl' : 'ltr'
+                        })
+                        this.startAutoSave()
+                }
+                const whisperation = await whisperationStore.getEntity(wid)
+                this.update({
+                    whisperation,
+                    mode,
+                    piece
+                })
+            },
+            updateLanguage() {
+                const nodes = this.refNodes()
+                const language = nodes.language.value;
+                [nodes.text, nodes.title].forEach(n => {
+                        n.style.direction = language === 'he' ? 'rtl' : 'ltr'
+                    }
+                )
+            },
+            savePieceIfAuto() {
+                if (this.state.autoSaveOn)
+                    return this.savePiece()
+            },
+            async savePiece() {
+
+                const fields = this.collectValues()
+                if (fields._errors) {
+                    Alert('Your piece should have a proper title and content of more than 20 characters')
+                    return
+                }
+
+                if (this.state.mode === 'edit') {
+                    await pieceStore.update(this.state.piece.id, fields)
+                    this.update({saveNotice: 'Changes saved'})
+                    setTimeout(() => this.update({saveNotice: 'auto-saving'}), 1000)
+                } else { // save and change to edit mode
+                    const newPieceFromServer = await pieceStore.create({
+                        piece: fields,
+                        whisperationId: this.state.whisperation.id
+                    })
+                    this.update({
+                        piece: newPieceFromServer,
+                        justSent: true,
+                        mode: 'edit'
+                    })
+                    this.startAutoSave()
+                    Info('New piece created! Changing to Editing.')
+                }
+            },
+            closeMessage() {
+                this.update({justSent: false})
+            },
+            cancel() {
+                history.back()
+            },
+            handleOnInput() {
+                if (!this.state.autoSaveOn)
+                    return
+
+                this._autoSave()
+            },
+            startAutoSave() {
+                this.update({autoSaveOn: true, saveNotice: 'auto-save started'})
+                this._autoSave = throttle(this.savePiece, 3000, this)
+            }
+        }
+
+
+    </script>
+
+
+</composer>

@@ -1,0 +1,83 @@
+<login-box class="data-form">
+
+    <section class="login form-section" show={!signupMode}>
+        <h1>Login</h1>
+        <section class="facebook form-section half-hidden">
+            <span class="action" onclick={facebookLogin}>Facebook login/signup</span>
+            <br>
+            <!--<span class="selectable nofacebook" onclick={noFacebookLogin}>i don't want to use Facebook</span>-->
+        </section>
+        <!--<div class="google-connect">-->
+        <!--<img alt="google signin" onclick="{googleLogin}" src="../images/btn_google_signin.png">-->
+        <!--</div>-->
+        <form class="form" id="loginForm" onsubmit="{passwordLogin}">
+            <div>
+                <input ref="email" placeholder="email" type="email" autocomplete="email" required>
+            </div>
+            <div>
+                <input ref="password" placeholder="password" type="password" autocomplete="current-password" required>
+            </div>
+            <div>
+                <span><input id="remember" type="checkbox" ref="rememberMe" checked><label
+                        for="remember">Remember me</label></span>
+            </div>
+            <div class="control">
+                <button class="action login password" onclick={passwordLogin} type="button">Login</button>
+            </div>
+        </form>
+        <div class="forgot-password">
+            <a href="#" onclick={resetPasswordRequest}>Forgot password</a>
+        </div>
+        <div show={!signupMode}>I'm new. Please
+            <a href="#signup">sign me up</a>
+        </div>
+    </section>
+
+    <script>
+        import {hash} from 'bcryptjs'
+        import {passwordLogin, ssoLogin} from "../../services/session-manager";
+        import {Alert} from "../../services/alert-service";
+        import {Invalid} from "../../lib/utils";
+        import {post} from "../../lib/api-helper";
+
+        const nextUrl = "/"
+
+        export default {
+
+
+            onMounted() {
+                this.state = {}
+            },
+
+            localize: s => s,
+
+            noFacebookLogin() {
+                noFacebook = true
+            },
+            async passwordLogin() {
+                const {email, password, rememberMe, _errors} = this.collectValues()
+                if (_errors)
+                    return
+                await hash(password, 10)
+                // noinspection ES6MissingAwait
+                passwordLogin(email, password, rememberMe)
+            },
+            facebookLogin() {
+                // = () => services.session.facebookLogin(nextUrl),
+                ssoLogin('facebook', nextUrl)
+            },
+            googleLogin() {
+                ssoLogin('google', nextUrl)
+            },
+            async resetPasswordRequest() {
+                const {email} = this.collectValues()
+                if (email == Invalid)
+                    Alert('Email field must be valid', 'error')
+                else {
+                    await post('users/resetPassword', {email})
+                    Alert('Reset password email has been sent', 'info')
+                }
+            }
+        }
+    </script>
+</login-box>

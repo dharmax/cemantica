@@ -1,0 +1,63 @@
+@import "responsive";
+
+@media only screen and (max-width: @mobile-width) {
+  .top-header {
+	  flex-direction: column !important;
+	  align-items: flex-end;
+  }
+
+  main-page, [is="main-page"] {
+	  .wall {
+		  display: flex;
+		  flex-direction: column;
+	  }
+
+  }
+
+  > *, * *, whisperation {
+	  font-family: "Comic Sans MS", cursive, sans-serif !important;
+  }
+
+  .feed {
+	  width: 95%;
+	  margin: auto;
+
+  }
+
+  .composer-container {
+	  flex-direction: column;
+
+	  whisperation {
+		  align-self: flex-end;
+		  margin-bottom: 1em;
+	  }
+
+	  .composer {
+		  padding-left: 0;
+		  margin-left: 0;
+		  display: flex !important;
+		  flex-direction: column;
+
+		  .title {
+			  display: flex;
+			  flex-direction: column;
+		  }
+
+		  textarea {
+			  flex-grow: 1;
+			  margin-bottom: 10px;
+			  height: 100%;
+		  }
+	  }
+  }
+
+
+  .my-profile {
+	  display: flex !important;
+	  flex-direction: column;
+  }
+
+  .piece-page {
+	  display: block !important;
+  }
+}

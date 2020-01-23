@@ -1,0 +1,90 @@
+<admin-management>
+    <section class="admin-management">
+
+        <div class="current">
+
+            <h2>Current Administrators</h2>
+            <ul>
+                <li each="{a in state.admins}">
+                    <span>{a.name}</span>
+                    <span>  {a.email}</span>
+                    <span>  {a.role}</span>
+                    <a href="" onclick="{()=>unAdmin(a.id, a.role)}">Un-admin</a>
+                </li>
+            </ul>
+        </div>
+        <button onclick="{addAdmin}">Add Administrator</button>
+
+        <div if="{state.adding}" class="selector">
+            <item-selector callback="{newAdminSelected}" loader="{userLoader}"
+                           projection="{['name','email']}"></item-selector>
+
+        </div>
+
+
+    </section>
+    <script>
+
+        import {callApi, post, put} from "../../../lib/api-helper";
+        import ItemSelector from "../item-selector.riot"
+
+        export default {
+
+            components: {
+                ItemSelector,
+            },
+            onMounted() {
+                // noinspection JSIgnoredPromiseFromCall
+                loadAdministrators(this)
+            },
+            addAdmin() {
+                this.update({adding: true})
+            },
+            async unAdmin(userId, role) {
+                await cancelRole(userId, role)
+                loadAdministrators(this)
+            },
+            async newAdminSelected(user) {
+                const role = 'Admin'
+                if (user)
+                    await addAdmin(user.id, role)
+                this.update({adding: false})
+                // noinspection JSIgnoredPromiseFromCall
+                loadAdministrators(this)
+
+            },
+            userLoader(filter) {
+                if (!filter)
+                    return []
+                return post('users/search', {string: filter, projection: ['name', 'email', 'id']})
+            }
+
+        }
+
+        async function loadAdministrators(comp) {
+            const results = await callApi('admin/get-admins')
+
+            const admins = results.map(r => {
+                return {
+                    id: r.userId,
+                    role: r.role,
+                    name: r.userInfo.name,
+                    email: r.userInfo.email
+                }
+            })
+            comp.update({admins})
+        }
+
+        function addAdmin(userId, role) {
+            return put(`admin/set-admin-role/${role}/${userId}`, {on: true})
+        }
+
+        function cancelRole(userId, role) {
+            return put(`admin/set-admin-role/${role}/${userId}`, {on: false})
+        }
+
+
+    </script>
+
+
+</admin-management>

@@ -1,0 +1,50 @@
+<ontology-browser>
+    <section if={state.entityDcrs} class="ontology">
+        <zippy title="predicates" floating>
+            <div class="predicates">
+                <ul>
+                    <li each="{p in state.predicateDcrs}">
+                        {p.name}
+                    </li>
+                </ul>
+            </div>
+        </zippy>
+
+        <div class="entities">
+            <h3>Entity Types</h3>
+            <nav>
+                <ul>
+                    <li each="{e in state.entityDcrs}" class="{e==state.selected? 'selected': ''}">
+                        <a onclick="{()=>selectEntityType(e)}">{e}</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+    <script>
+
+        import dispatcher from '../../../lib/dispatcher'
+        import Zippy from '../zippy.riot'
+        import {adminStore} from "../../../viewmodel/admin-store";
+
+        export default {
+            components: {
+                Zippy
+            },
+            async onMounted() {
+
+                const ontology = await adminStore.loadOntology()
+                this.update({
+                    entityDcrs: Object.keys(ontology.entityDcrs),
+                    predicateDcrs: Object.values(ontology.predicateDcrs)
+                })
+
+            },
+            selectEntityType(selected) {
+                dispatcher.trigger('ontology browser', 'ontology:entity-type-selected', selected)
+                this.update({selected})
+            },
+        }
+
+    </script>
+</ontology-browser>

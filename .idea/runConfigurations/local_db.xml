@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="local db" type="NodeJSConfigurationType" path-to-js-file="whisperation-server.js" working-dir="$PROJECT_DIR$">
+    <envs>
+      <env name="EMAIL_TRANSPORT_PW" value="iamhome900!" />
+      <env name="EMAIL_TRANSPORT_USER" value="whisperation.app" />
+      <env name="LOG_FOLDER" value="/opt/misc/logs" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>

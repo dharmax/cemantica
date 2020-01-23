@@ -1,0 +1,578 @@
+@import "scheme.less";
+@import "animate.less";
+@import "input-range";
+
+
+.data-form {
+  .standard-border();
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  padding: 2em;
+  margin: auto;
+  background-color: white;
+
+  .already-registered {
+    font-size: 0.8em;
+    margin-top: 2em;
+    text-align: right;
+  }
+
+}
+
+.google-connect {
+  text-align: center;
+  margin-bottom: 1em;
+
+  img {
+    height: 2em;
+  }
+}
+
+.login {
+  //width: 25em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin: auto;
+
+  form {
+    display: grid;
+    grid-template-rows: auto;
+    grid-gap: 1em;
+  }
+
+  .forgot-password {
+    font-size: 1rem;
+    text-align: right;
+    margin-bottom: 5px;
+  }
+}
+
+.signup {
+
+  margin: auto;
+
+  .form > div > label {
+    min-width: 7em;
+  }
+}
+
+
+.user-profile {
+  width: 20em;
+  min-height: 21em;
+
+  header {
+    display: flex;
+    justify-content: space-between;
+
+    .logout {
+      text-align: right;
+    }
+
+    .name {
+      font-weight: bolder;
+    }
+  }
+
+  .shortlink {
+    font-size: 0.75em;
+    margin-top: 1em;
+    text-align: end;
+
+    span {
+      color: darkblue;
+    }
+  }
+
+  zippy[name=accounts] {
+    .zippy-content {
+      max-height: 25%;
+      overflow-y: auto;
+    }
+  }
+}
+
+zippy {
+  margin: 1em;
+  display: block;
+  padding: 0 2px 6px 2px;
+  overflow-y: hidden;
+
+  .zippy-content {
+    .animated;
+
+    background: @zippy-background;
+
+    &.open {
+      .slideInDown;
+    }
+
+    &.closing {
+
+      .slideOutUp;
+    }
+
+    &.close {
+      display: none;
+    }
+  }
+
+  .header {
+    background: @semi-transparent-background;
+    cursor: pointer;
+    font-size: 0.75em;
+    display: inline-flex;
+    align-items: center;
+
+    &:hover {
+      box-shadow: 0 0 9px 5px cornflowerblue;
+      transition: box-shadow 0.5s;
+    }
+
+    &.open {
+      box-shadow: inset 2px 2px 2px #adadad;
+
+      .indicator:before {
+        content: "\21e9";
+      }
+    }
+
+    &.close {
+      box-shadow: 2px 2px 2px #adadad;
+
+      .indicator:before {
+        content: "\21e7";
+      }
+    }
+  }
+
+  &.floating {
+    &.open, &.closing {
+      .zippy-content {
+        position: absolute;
+        background-color: @light-background;
+      }
+    }
+  }
+
+  .list {
+    border: none;
+  }
+}
+
+toasters, .toasters {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding-left: 1em;
+  background-color: transparent;
+  max-width: 50%;
+  max-height: 60%;
+  overflow-y: auto;
+  font-size: 1.25rem;
+
+  .message {
+    .animated();
+    .slideInDown;
+    .standard-border();
+    margin: 5px;
+    padding: 10px;
+    width: 10em;
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.26);
+    justify-content: stretch;
+
+    .close {
+      cursor: pointer;
+    }
+
+    span {
+      flex-grow: 1;
+    }
+
+    raw {
+      width: 100%;
+      height: 100%;
+    }
+
+    &.error {
+      raw, pre {
+        background-color: red;
+        color: white;
+      }
+    }
+
+    &.success, &.info {
+      raw, pre {
+        background-color: green;
+        color: white;
+      }
+    }
+
+  }
+}
+
+reset-password-page {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: #a8a2f5;
+
+  > .form {
+    padding: 2em;
+    border: 1px solid transparent;
+    border-radius: 1em;
+    background-color: white;
+    width: 20em;
+    height: auto;
+  }
+}
+
+.json {
+  color: @default-text-color;
+
+  .key {
+    font-weight: bold;
+  }
+
+  .string, .number, .boolean {
+    color: darkblue;
+  }
+}
+
+.item-selector {
+  display: grid;
+  grid-template-rows: 2em 1fr 2.5em;
+  margin: 10px 0;
+
+  .search {
+    i {
+      position: relative;
+      left: -1.5em;
+      top: 0.25em;
+    }
+  }
+
+  .preselected {
+    background-color: @dark-background;
+    color: contrast(@dark-background);
+  }
+
+  .control {
+    padding: 1px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    align-items: center;
+
+  }
+
+}
+
+.action {
+  border-radius: 0.65em;
+  background-color: #5591e0;
+  color: white;
+  border: 0 solid transparent;
+  padding: 3px 1em;
+  box-shadow: 2px 2px 8px 1px #888080ba;
+
+  &:hover {
+    background-color: #00d4ff;
+    box-shadow: 0 0 0 0 #888080ba;
+    transition: 0.3s all;
+  }
+}
+
+follow-button {
+  display: block;
+  padding: 5px;
+
+  .extra {
+    margin: 5px;
+    font-size: 0.75em;
+
+    > span {
+      margin-left: 5px;
+    }
+  }
+}
+
+rating-widget {
+  border: @lightbox-border;
+  padding: 1em;
+  border-radius: 1em;
+  margin: 5px;
+
+  input[type=range] {
+    position: relative;
+    left: -2.5em;
+  }
+
+  .average {
+    :last-child {
+      font-size: 2em;
+      font-weight: bold;
+      font-family: "Arial Black", serif;
+      display: block;
+    }
+  }
+}
+
+pager {
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    max-width: 30em;
+    user-select: none;
+
+    span {
+      color: @dark-text;
+
+      &:hover {
+        background-color: @dark-text;
+        color: contrast(@dark-text);
+      }
+
+      &:active {
+        background-color: lighten(@dark-text, 25%)
+      }
+    }
+  }
+}
+
+feedback-form {
+  .body {
+    display: flex;
+    flex-direction: column;
+
+    a {
+
+    }
+
+    select {
+      padding: 1em;
+    }
+  }
+}
+
+.app-admin, [is="app-admin"] {
+  .totop-header {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+user, [is="user"] {
+  height: min-content;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+
+    img {
+      width: available;
+      height: available;
+    }
+
+    a {
+      height: auto;
+      max-width: 6em;
+      text-align: center;
+    }
+  }
+}
+
+inbox-widget {
+  .indicator {
+    text-shadow: none;
+
+    &.open a {
+      color: orangered;
+      font-weight: bold;
+    }
+
+    &.close a {
+      color: chocolate;
+      opacity: 0.75;
+    }
+
+    a {
+      display: flex;
+      align-items: center;
+
+      i {
+        padding-left: 12px;
+      }
+    }
+  }
+
+  .line-control {
+    i {
+      cursor: pointer;
+
+      &:hover {
+        color: @selected-menu-item-color;
+      }
+    }
+  }
+
+  .lightbox.inbox-widget {
+    .content {
+
+      .control {
+        text-shadow: none;
+        color: @dark-text;
+
+        form {
+          display: grid;
+          grid-column-start: 1;
+          grid-column-end: 3;
+
+          > div {
+            display: flex;
+          }
+        }
+      }
+
+      .title {
+        padding: 0 1em;
+        text-align: center;
+      }
+
+      .body {
+        text-shadow: none;
+        background-color: @inbox-background;
+
+        ul, ol {
+          list-style: none;
+        }
+
+        li {
+          &:hover {
+            background-color: darken(@inbox-background, 10%);
+          }
+        }
+      }
+    }
+  }
+}
+
+message-viewer {
+  .lightbox {
+    .content {
+      animation: none;
+
+      .body {
+        animation: none;
+
+
+      }
+    }
+  }
+}
+
+discussion, [is="discussion"] {
+
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid silver;
+  background-color: @discussion-background-color;
+
+  .order {
+    font-size: 0.8em;
+  }
+  .sub-discussion {
+    //margin-left: 2em;
+  }
+
+  a {
+    &.more-depth {
+      background: lightgray;
+      text-align: center;
+    }
+
+    &.more-items {
+      background: lightgray;
+      text-align: center;
+    }
+  }
+
+  .sub-discussion {
+    margin-left: 1.5em;
+  }
+
+  discussion-post {
+    .standard-border(silver);
+    padding-left: 3px;
+    margin: 1em 0 1em 5px;
+    background-color: @discussion-post-background-color;
+
+    .post-body {
+      .title {
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+
+      .time {
+        float: right;
+      }
+
+      .from {
+        float: left;
+      }
+
+      .content {
+        clear: both;
+        padding: 5px;
+        //border-bottom: 1px solid palevioletred;
+        margin: 5px;
+      }
+    }
+
+
+  }
+
+}
+
+new-post {
+  background: transparent;
+
+  input {
+    outline: 1px solid silver;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid silver;
+    margin: 10px;
+  }
+
+  .open-button {
+    align-self: flex-end;
+  }
+}
+
+.pager {
+  a * {
+    border: 1px solid transparent;
+    border-radius: 0.5em;
+    background-color: @label-color;
+    color: white;
+    &:hover {
+      color: black;
+    }
+    &:disabled {
+      background-color: gray;
+    }
+  }
+}

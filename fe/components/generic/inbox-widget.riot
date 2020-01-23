@@ -1,0 +1,148 @@
+<inbox-widget>
+
+    <div class="indicator {state.hasNotifications ? 'open' : 'close'}">
+        <a onclick="{openInbox}">{state.hasNotifications} unread <i class="material-icons">email</i></a>
+    </div>
+
+    <template if="{state.showInbox}">
+        <div class="modal-overlay"/>
+        <div class="lightbox inbox-widget">
+
+            <div class="content">
+                <div class="title">
+                    Notifications and Messages
+                </div>
+                <div class="body list">
+                    <table>
+                        <tr each="{n in state.notifications}">
+                            <td class="line-control">
+                                <i onclick="{()=>toggleRead(n)}" class="material-icons">{!n.read ? 'markunread' :
+                                    'mail_outline'}</i>
+                                <i onclick="{()=>erase(n)}" class="material-icons">delete</i>
+                                <i if="{n.eventName=='message'}" onclick="{()=>reply(n)}"
+                                   class="material-icons">reply</i>
+                            </td>
+                            <td class="header" onclick="{()=>viewMessage(n)}"> {displayableHeader(n)}</td>
+                            <td class="date" title="{localDate(n._created)}"> {relativeTime(n._created)}</td>
+                        </tr>
+                        <tr if="{state.notifications && state.notifications.length ===0}">
+                            <td>
+                                No {isReadOnlyMode()? 'unread' :''} messages/notifications
+                            </td>
+                        </tr>
+                        <tr></tr>
+                    </table>
+                </div>
+                <div class="control">
+                    <form class="filter" onclick="{updateList}">
+                        <div>
+                            <input type="radio" name="readFilter" ref="all" value="all">Show read
+                            <input type="radio" name="readFilter" ref="unread" value="unread" checked>Hide read
+                        </div>
+                        <div>
+                            <input type="radio" name="messageFilter" ref="messages" value="messages">Messages
+                            <input type="radio" name="messageFilter" ref="notifications" value="notifications" checked>Notifications
+                        </div>
+                    </form>
+                    <button onclick="{()=>{update({showInbox:false})}}">close</button>
+                </div>
+
+            </div>
+        </div>
+
+        <template if="{state.messageToShow}">
+            <message-viewer message="{state.messageToShow}" onClose="{()=>update({messageToShow: null})}"/>
+        </template>
+
+    </template>
+
+    <script>
+
+        import dispatcher from "../../lib/dispatcher";
+        import {userStore} from "../../viewmodel/user-store";
+        import MessageViewer from './message-viewer.riot'
+        import {Info} from "../../services/alert-service";
+        import {displayableHeader} from "../../lib/inbox-helper";
+        import {localDate} from "../../lib/utils";
+        import {relativeTime} from "short-relative-time";
+
+        /**
+         * props:
+         *  none
+         */
+        export default {
+
+            components: {
+                MessageViewer
+            },
+            relativeTime,
+            localDate,
+            async onMounted() {
+                dispatcher.on('notification:created', async event => {
+                    if (!this.state.showInbox)
+                        this.update({
+                            hasNotifications: await userStore.hasNotifications()
+                        })
+                    else
+                        this.updateList()
+                })
+
+                this.update({
+                    hasNotifications: await userStore.hasNotifications()
+                })
+                dispatcher.on('notification:status-changed', event => {
+                    this.state.notifications.find(n => n.id === event.data.entityId).read = event.data["isRead"]
+                    this.update({
+                        notifications: this.state.notifications,
+                        hasNotifications: event.data.notificationCount
+                    })
+                })
+                dispatcher.on('notification:deleted', event => {
+                    const notifications = this.state.notifications.filter(n => n.id !== event.data.entityId)
+                    this.update({
+                        notifications,
+                        hasNotifications: event.data.notificationCount
+                    })
+                })
+            },
+            async openInbox() {
+                this.update({showInbox: true})
+                this.updateList()
+            },
+            filter: {readOnly: true, messages: false, notifications: true},
+            updateList() {
+                const form = this.$('form')
+                this.filter.readOnly = form.readFilter.value === 'unread'
+                this.filter.messages = form.messageFilter.value === 'messages'
+                this.filter.notifications = form.messageFilter.value === 'notifications'
+                this.loadNotifications()
+            },
+            isReadOnlyMode() {
+                return this.filter.readOnly
+            },
+            async erase(n) {
+                await userStore.deleteNotification(n.id)
+                Info('Notification deleted')
+            },
+            async toggleRead(n) {
+                await userStore.setRead(n.id, !n.read)
+                Info('Read flag changed')
+
+            },
+            async loadNotifications() {
+                let notifications = await userStore.getNotifications(!this.filter.readOnly)
+                notifications = notifications.filter(n => {
+                    return this.filter.notifications ? n.eventName !== 'message' : n.eventName === 'message'
+                })
+                this.update({
+                    notifications,
+                })
+                return notifications
+            },
+            displayableHeader,
+            viewMessage(n) {
+                this.update({messageToShow: n})
+            }
+        }
+    </script>
+</inbox-widget>

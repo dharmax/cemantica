@@ -1,0 +1,22 @@
+<piece-editor>
+    <div if="{state.piece}">
+        <composer piece="{state.piece}"></composer>
+    </div>
+    <script>
+
+        import {stateManager} from "../../lib/state-manager";
+        import {pieceStore} from "../../viewmodel/piece-store";
+        import Composer from './composer.riot'
+
+        export default {
+            components: {
+                Composer
+            },
+            async onMounted() {
+                const pid = stateManager.context
+                this.update({piece: await pieceStore.getEntity(pid)})
+            }
+        }
+
+    </script>
+</piece-editor>

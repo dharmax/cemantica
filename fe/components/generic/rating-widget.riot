@@ -1,0 +1,82 @@
+<rating-widget>
+
+    <div class="community-score">
+        <template if="{props.entity.averageScore}">
+            <span class="average"><span>Average Score:</span><span>{Math.round(props.entity.averageScore*10)/10}</span></span>
+            <span class="voters"> {props.entity.ratingCount} votes</span>
+        </template>
+        <template if="{!props.entity.averageScore}">
+            <span if="{!ownedByUser()}">Please be the first to rate this creation...</span>
+            <span if="{ownedByUser()}">Your creation wasn't rated yet</span>
+        </template>
+    </div>
+
+    <div class="my-rating" if="{!ownedByUser()}">
+        <label>your vote:</label>
+        <input type="range" oninput="{updateRating}" value="{state.userRating || 5}" min="1" max="10" step="0.5"
+               disabled="{!props.userId}">
+        <div>{state.userRating} - {ratingAsString(state.userRating)}</div>
+
+    </div>
+
+    <script>/**
+     * Generic rating widget
+     * props:
+     * - entity. Must have:
+     *      - averageScore
+     *      - ratingCount
+     *      - id
+     * - ownerId - optional. If it's like the current user id, rating is not allowed
+     * - userId
+     * - onchange - optional. Called when the user rates the entity
+     */
+
+    import {userStore} from "../../viewmodel/user-store";
+    import {throttle} from "../../lib/utils";
+
+
+    export default {
+        async onMounted() {
+            this._updateRating = throttle(this._updateRatingRecord, 3500, this)
+            const ratingRecord = await userStore.getRatingForEntity(this.props.entity.id, this.props.entity._entityType, this.props.userId)
+            this.update({userRating: ratingRecord && ratingRecord.value || 0})
+        },
+        async updateRating(e) {
+
+            const value = e.target.value;
+            this.update({
+                userRating: value
+            })
+            this._updateRating(value)
+        },
+        async _updateRatingRecord(value) {
+            await userStore.rateEntity(this.props.entity.id, this.props.entity._entityType, value)
+            this.props.onchange && this.props.onchange({value, entityId: this.props.entity.id})
+
+        },
+        ownedByUser() {
+            return this.props.userId
+                && (this.props.userId == this.props.ownerId)
+        },
+        ratingAsString(rating) {
+            if (!rating)
+                return 'No rating'
+            const roundRating = Math.floor(rating)
+            return [
+                'The worse',
+                'Bad',
+                'Not good',
+                'Mediocre',
+                'Not too bad',
+                'Decent',
+                'Fine',
+                'Good',
+                'Very good',
+                'Exceptional'
+            ][roundRating - 1] + (roundRating < rating ? '+' : '')
+        }
+
+    }
+
+    </script>
+</rating-widget>

@@ -1,0 +1,56 @@
+<html>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<link rel="icon" href="/images/pen2.ico"/>
+<meta property="og:url" content="http://www.whisperation.org/#piece/{{firstPiece.id}}">
+<meta property="og:title" content="{{firstPiece.title}}">
+<meta property="og:description" content="Where you go to write (and read!)">
+<meta property="og:image" content="/static/pen2.png">
+<meta property="og:site_name" content="Whisperation">
+<meta property="og:type" content="article">
+
+<body>
+
+<ul class="content-map-listing">
+    {{#each pieces}}
+    <li>
+        <div class="title"><a href="/#piece/{{this.id}}">{{this.title}}</a></div>
+        <div class="writer">by <a href="/#writer/{{this.writer.id}}">{{this.writer.name}}</a></div>
+        <article title="press to zoom"><a href="/#piece/{{this.id}}">{{this.text}}</a></article>
+    </li>
+    {{/each}}
+</ul>
+<nav>
+    <a href="/content/1">First</a>
+    {{#if prev}}<a href="/content/{{prev}}">Prev</a>{{/if}}
+    {{page}}
+    {{#if next}}<a href="/content/{{next}}">Next</a>{{/if}}
+    {{#each followUp}}
+    <a href="/content/{{this}}">{{this}}</a>
+    {{/each}}
+    <a href="/content/{{last}}">Last</a>
+</nav>
+</body>
+<style>
+    .content-map-listing li {
+        border: 1px solid silver;
+        padding: 1em;
+        margin: auto 25% auto 25%;
+        background-color: #d9f6f4;
+        list-style: none;
+    }
+
+    nav {
+        text-align: center;
+    }
+    .content-map-listing li .title, .writer {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .content-map-listing li article {
+        font-size: smaller;
+    }
+</style>
+
+</html>

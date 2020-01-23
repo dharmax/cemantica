@@ -1,0 +1,44 @@
+<zippy class="{state.openState} {props.floating ?'floating':''}">
+    <div class="header {state.openState}" onclick={toggle}>
+        <i class="material-icons">{ state.openState == 'open' ? 'arrow_drop_down' : 'arrow_right'}</i>
+        <span>{props.title || 'no title'}</span>
+    </div>
+    <div class="zippy-content {state.openState}">
+        <slot/>
+    </div>
+    <script>
+        /**
+         * attributes:
+         * @title the title (optional)
+         * @floating
+         * @ref - for api injection. It injects the this of this zippy
+         * @default by default, a zippy is closed. set it to "open" otherwise
+         */
+        export default {
+            onMounted() {
+                this.state = {
+                    openState: this.props.default == "open" ? 'open' : 'close'
+                }
+                this.props.ref && (this.props.ref.api = this)
+                this.update()
+            },
+            open() {
+                this.update({openState: 'open'})
+            },
+            close() {
+                if (this.state.openState != 'open')
+                    return
+                this.update({openState: 'closing'})
+                setTimeout(() => this.update({openState: 'close'}), 750)
+            },
+            toggle() {
+                if (this.state.openState == 'open')
+                    this.close()
+                else
+                    this.open()
+
+            }
+        }
+
+    </script>
+</zippy>

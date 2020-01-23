@@ -1,0 +1,49 @@
+{
+  "name": "whisperation",
+  "version": "2.0.0",
+  "description": "Whispers of Inspiration",
+  "scripts": {
+    "build": "node_modules/parcel-bundler/bin/cli.js build *.html ",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Avi Tshuva, dharmax",
+  "license": "Commercial",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "components": "^0.1.0",
+    "cron-validator": "^1.0.5",
+    "flatpickr": "^4.6.3",
+    "riot": "^4.8.5",
+    "short-relative-time": "^1.0.0",
+    "socket.io-client": "^2.3.0"
+  },
+  "devDependencies": {
+    "@riotjs/cli": "^4.0.3",
+    "@riotjs/compiler": "^4.5.5",
+    "@riotjs/hot-reload": "^4.0.0",
+    "@riotjs/parcel-plugin-riot": "^4.0.1",
+    "@types/bcryptjs": "latest",
+    "@types/flatpickr": "^3.1.2",
+    "@types/socket.io-client": "^1.4.32",
+    "less": "^3.10.3",
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-static-files-copy": "^2.2.1",
+    "ts-loader": "^6.1.2",
+    "typescript": "^3.6.4"
+  },
+  "browserslist": [
+    "last 2 Chrome versions"
+  ],
+  "staticFiles": {
+    "staticPath": [
+      {
+        "staticPath": "ssl-auth",
+        "staticOutDir": ".well-known"
+      },
+      {
+        "staticPath": "static",
+        "staticOutDir": "static"
+      }
+    ]
+  }
+}

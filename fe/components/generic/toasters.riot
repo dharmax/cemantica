@@ -1,0 +1,46 @@
+<toasters>
+
+    <div each={(message,i) in state.alerts} class="message {message.type} {message.options.class}">
+        <i class="close material-icons" onclick="{()=>removeMessage(i)}">close</i>
+        <raw html="{message.message}"></raw>
+    </div>
+    <script>
+
+        import Dispatcher from "../../lib/dispatcher";
+        import {alertQueue} from "../../services/alert-service";
+        import Raw from './raw.riot'
+
+        export default {
+            components: {
+                Raw
+            },
+            onMounted() {
+
+                this.state.alerts = []
+                Dispatcher.on('alert:fired', e =>
+                    this.update({
+                        alerts: e.data
+                    })
+                )
+                Dispatcher.on('alert:cleared', e =>
+                    this.update({
+                        alerts: e.data
+                    })
+                )
+            },
+            modalAlert() {
+                return this.state.alerts
+                    && this.state.alerts.length
+                    && this.state.alerts[0].options.modal
+            },
+
+            removeMessage(i) {
+
+                alertQueue.alerts.splice(i, 1)
+                this.update({
+                    alerts: alertQueue.alerts
+                })
+            }
+        }
+    </script>
+</toasters>

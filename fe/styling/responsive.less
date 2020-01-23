@@ -1,0 +1,91 @@
+@import "scheme";
+
+@media screen  and (min-width: @mobile-width) {
+  nav li {
+    min-width: 120px;
+    border-bottom: none;
+  }
+
+  menu-manager {
+    .openner {
+      display: none;
+    }
+
+    .the-menu {
+
+    }
+  }
+
+  .feedback {
+    left: 1em;
+    transform: rotateZ(90deg);
+    transform-origin: left;
+    top: 45%;
+  }
+}
+
+@media screen  and (max-width: @mobile-width) {
+  .lightbox {
+    max-width: 99vw;
+
+    &.inbox-widget {
+      .content {
+        max-width: 100% !important;
+      }
+
+      .line-control {
+        min-width: 4em;
+      }
+    }
+  }
+
+  header {
+    .navigation {
+      position: absolute;
+      top: 0;
+    }
+  }
+
+  .feedback {
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+  }
+
+  textarea {
+    width: 95%;
+    margin: auto;
+  }
+
+  body {
+    font-family: Arial;
+
+  }
+
+
+  menu-manager {
+    .openner {
+      display: block;
+    }
+
+    .the-menu {
+      &.open {
+        width: auto;
+        display: flex;
+
+        nav > * {
+          display: flex;
+          flex-direction: column;
+          border-right: 1px solid black;
+          box-shadow: @shadow1;
+          position: fixed;
+          z-index: 20;
+          background-color: @light-background;
+          overflow-y: auto;
+        }
+      }
+
+      display: none;
+    }
+  }
+}

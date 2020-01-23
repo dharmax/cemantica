@@ -1,0 +1,229 @@
+<model-browser>
+
+    <section class="model-browser">
+        <ontology-browser/>
+        <div class="entity-browser-div" if={state.selectedEntityType}>
+            <div class="entity-browser">
+                <div class="entities">
+                    <table>
+                        <thead>
+                        <tr>
+                            <td></td>
+                            <td each="{col in state.cols}">{col}</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr each="{entity in state.items}" onclick="{()=> xRayEntity(entity)}">
+                            <td onclick="{()=>viewEntity(entity)}"><a>view</a></td>
+                            <td each="{field in Object.values(entity)}">
+                                <span>{makeDisplayable(field)}</span></td>
+                        </tr>
+                        <tr></tr>
+                        </tbody>
+                    </table>
+                    <pager provider="{loadEntities}" api="{entityPagerApi}"/>
+
+                </div>
+                <div class="xray" if="{state.entity}">
+                    <div class="preds">
+                        <table>
+                            <thead>
+                            <tr>
+                                <td colspan="4">Incoming</td>
+                            </tr>
+                            </thead>
+                            <tr each="{p in state.incoming.items}" onclick="{()=>drillDown(p)}">
+                                <td><span>{p.predicateName}</span></td>
+                                <td><span>{p.sourceType}</span></td>
+                                <td><span>{getName(p.peerEntity)}</span></td>
+                                <td><span>{p.sourceId}</span></td>
+                            </tr>
+                            <tr></tr>
+                        </table>
+                    </div>
+                    <div class="preds">
+                        <table>
+                            <thead>
+                            <tr>
+                                <td colspan="4">Outgoing</td>
+                            </tr>
+                            </thead>
+                            <tr each="{p in state.outgoing.items}" onclick="{()=>drillDown(p)}">
+                                <td><span>{p.predicateName}</span></td>
+                                <td><span>{p.targetType}</span></td>
+                                <td><span>{getName(p.peerEntity)}</span></td>
+                                <td><span>{p.targetId}</span></td>
+                            </tr>
+                            <tr></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div if="{state.drillDownPred}">
+                    <div class="modal-overlay"></div>
+                    <div class="lightbox">
+                        <div class="content">
+                            <div class="title">
+                                { `${state.drillDownPred.predicateName} - ${state.drillDownPred.peerEntity._etype}`}
+                            </div>
+                            <div class="body">
+                                <div class="payload" if="{state.drillDownPred.payload}">
+                                    <label>Payload:</label>
+                                    <raw html="{prettyJSON(state.drillDownPred.payload)}"/>
+                                </div>
+                                <raw html="{prettyJSON(state.drillDownPred.peerEntity)}"/>
+                            </div>
+                            <div class="control">
+                                <button onclick="{()=>drillDown()}">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div if="{state.entityToView}">
+                    <div class="modal-overlay"></div>
+                    <div class="lightbox">
+                        <div class="content">
+                            <div class="title">
+                                {getName(state.entityToView)}
+                            </div>
+                            <div class="body">
+                                <raw html="{prettyJSON(state.entityToView)}"/>
+                            </div>
+                            <div class="control">
+                                <button onclick="{()=>viewEntity()}">Close</button>
+                                <button class="changeEntity" onclick="{()=>update({changeEntity:true})}">Change</button>
+                                <button class="delete" onclick="{()=>update({confirmDelete:true})}">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <template if="{state.confirmDelete}">
+                <div class="modal-overlay"/>
+                <div class="lightbox">
+                    <div class="content">
+                        <div class="title">Confirm</div>
+                        <div class="body">Yes, please delete the entity</div>
+                        <div class="control">
+                            <button onclick="{deleteEntity}">Delete</button>
+                            <button onclick="{()=>update({confirmDelete:false})}">Abort</button>
+                        </div>
+                    </div>
+
+                </div>
+            </template>
+            <template if="{state.changeEntity}">
+                <div class="modal-overlay"/>
+                <div class="lightbox">
+                    <div class="content">
+                        <div class="title">Change Entity Fields</div>
+                        <div class="body">
+                            field: <input type="text" ref="fieldName">
+                            value: <input type="text" ref="fieldValue">
+                        </div>
+                        <div class="control">
+                            <button onclick="{executeChange}">Change</button>
+                            <button onclick="{()=>update({changeEntity:false})}">Abort</button>
+                        </div>
+                    </div>
+
+                </div>
+            </template>
+        </div>
+    </section>
+    <script>
+
+        import OntologyBrowser from './ontology-browser.riot'
+        import dispatcher from '../../../lib/dispatcher'
+        import {prettyJSON} from "../../../lib/utils"
+        import {adminStore} from '../../../viewmodel/admin-store'
+        import Raw from '../raw.riot'
+        import Pager from '../pager.riot'
+        import {Alert, Info} from "../../../services/alert-service";
+
+        export default {
+            components: {
+                OntologyBrowser,
+                Raw,
+                Pager
+            },
+            entityPagerApi: {},
+            toggle() {
+                this.update({ontologyOpen: !this.state.ontologyOpen})
+            },
+            entityBrowserApi: {},
+            onBeforeMount(props, state) {
+                this.ontologyZippy = {}
+            },
+            onMounted() {
+                this.state = {
+                    ontologyOpen: true
+                }
+                dispatcher.on('ontology:entity-type-selected', e => {
+                    if (e) {
+                        this.update({
+                            selectedEntityType: e.data,
+                            incoming: [], outgoing: []
+                        })
+                        this.entityPagerApi.pager.gotoStart()
+                    }
+                })
+            },
+            async loadEntities(from, count) {
+                const result = await adminStore.loadEntities(this.state.selectedEntityType, {from, count})
+                const cols = {}
+                result.items.forEach(i => {
+                    delete i._id
+                    delete i._etype
+                    delete i._version
+                })
+                result.items.forEach(i => Object.assign(cols, Object.keys(i)))
+
+                this.update({items: result.items, cols: Object.values(cols)})
+                return result
+            },
+            async xRayEntity(e) {
+                const result = await adminStore.xrayEntity(this.state.selectedEntityType, e.id)
+                this.update(result)
+            },
+            getName(e) {
+                return e.name || e.email || e.id
+            },
+            drillDown(p) {
+                this.update({drillDownPred: p})
+            },
+            viewEntity(e) {
+                this.update({entityToView: e})
+            },
+            prettyJSON(json) {
+                return prettyJSON(json)
+            },
+            makeDisplayable(field) {
+
+                if (Array.isArray(field))
+                    return `(Array, l=${field.length})`
+                if (typeof field == 'object')
+                    return '(object)'
+                field = '' + field
+                return field.substr(0, 30)
+            },
+            async deleteEntity() {
+                await adminStore.deleteEntity(this.state.selectedEntityType, this.state.entityToView.id)
+                this.update({confirmDelete: false, entityToView: false})
+                Info('Entity Deleted')
+                // noinspection ES6MissingAwait
+                this.entityPagerApi.pager.updatePage()
+            },
+            async executeChange() {
+                const {fieldName, fieldValue} = this.collectValues()
+                await adminStore.changeEntity(this.state.selectedEntityType, this.state.entityToView.id, fieldName, fieldValue)
+                this.update({changeEntity: false})
+                Info('Entity Changed')
+                // noinspection ES6MissingAwait
+                this.entityPagerApi.pager.updatePage()
+            }
+
+        }
+
+    </script>
+</model-browser>

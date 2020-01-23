@@ -1,0 +1,142 @@
+<my-profile>
+
+    <section class="my-profile">
+        <div class="side">
+
+            <div class="picture" if="{state.profile}">
+                <user u="{state.profile}"/>
+                <div class="control">
+                    <button onclick="{changePicture}" disabled title="unimplemented yet">Change</button>
+                </div>
+            </div>
+
+
+        </div>
+        <form if="{state.profile}">
+
+            <div class="one" oninput="{updateProfile}">
+                <h1>General</h1>
+                <label>Display Name:
+                    <input ref="name" type="text" value="{state.profile.name}">
+                </label>
+                <br>
+                <label>Real Name:
+                    <input ref="realName" type="text" value="{state.profile.realName}">
+                </label>
+                <br>
+                <label>Email
+                    <span>{state.profile.email}</span>
+                </label>
+                <br>
+                <label>Gender:
+                    <span>
+                        <input checked="{state.profile.gender==='male'}" name="gender" ref="gender" type="radio"
+                               value="male">Male
+                        <input checked="{state.profile.gender==='female'}" name="gender" ref="gender" type="radio"
+                               value="female">Female
+                    </span>
+                </label>
+                <br>
+                <label>Country:
+                    <select autocomplete="on" ref="country" value="{state.profile.country}">
+                        <option each="{c in state.countries}" selected="{state.profile.country===c.name}"
+                                value="{c.name}">
+                            {c.name}
+                        </option>
+                    </select>
+                </label>
+                <br>
+                <label>Birthday
+                    <time-picker ref="birthday" value="{state.profile.birthday}"/>
+                </label>
+                <div class="bio">
+                    <label>About myself</label><br>
+                    <textarea ref="generalBio" cols="30" rows="10">{state.profile.generalBio}</textarea>
+                </div>
+            </div>
+            <div class="two" oninput="{updatePreferences}">
+                <h1>Preferences</h1>
+                <label>Main Language
+                    <select autocomplete="on" ref="preferredLanguage"
+                            value="{state.profile.preferences.preferredLanguage}">
+                        <option each="{l in state.languages}"
+                                selected="{state.profile.preferences.preferredLanguage===l}"
+                                value="{l}">
+                            {l}
+                        </option>
+                    </select>
+                </label>
+                <br>
+                <label>Known languages</label>
+                <select ref="knownLanguages" value="{state.profile.preferences.knownLanguages}" multiple>
+                    <option each="{l in state.languages}" value="{l}"
+                            selected="{state.profile.preferences.knownLanguages && state.profile.preferences.knownLanguages.includes(l)}">
+                        {languageNames[l]}
+                    </option>
+                </select>
+                <br>
+                <label>Email Digest Interval (in days)
+                    <input max="28" min="7" ref="digestIntervalInDays" step="7" type="number"
+                           value="{state.profile.preferences.digestIntervalInDays}">
+                </label>
+            </div>
+        </form>
+
+    </section>
+
+
+    <script>
+
+        import {userStore} from "../../viewmodel/user-store";
+        import TimePicker from './time-picker.riot'
+        import {throttle} from "../../lib/utils";
+        import {callApi} from "../../lib/api-helper";
+        import InboxWidget from './inbox-widget.riot'
+        import User from './user.riot'
+
+        export default {
+            components: {
+                TimePicker,
+                User,
+                InboxWidget
+            },
+            onMounted() {
+
+                this.setup()
+                this.updateProfile = throttle(this.updateProfile_, 500, this)
+                this.updatePreferences = throttle(this.updatePreferences_, 500, this)
+            },
+            async setup() {
+                const profile = await userStore.getMyProfile()
+                const countries = await callApi('sys/data/countries')
+
+                this.update({
+                    profile,
+                    countries,
+                    languages: ['en', 'he']
+                })
+            },
+            languageNames: {
+                en: 'English',
+                he: 'Hebrew'
+            },
+            updateProfile_(e) {
+                let {field, value} = this.getFieldAndValue(e);
+                // noinspection JSIgnoredPromiseFromCall
+                userStore.updateMe({[field]: value})
+            },
+            updatePreferences_(e) {
+                let {field} = this.getFieldAndValue(e);
+                const value = this.collectValues()[field];
+                const preferences = ['useMetric', 'knownLanguages', 'preferredLanguage', 'digestIntervalInDays'].reduce((a, c) => {
+                    a[c] = this.state.profile.preferences[c]
+                    return a
+                }, {})
+
+                preferences[field] = value
+                userStore.updateMe({preferences})
+            }
+        }
+
+    </script>
+</my-profile>

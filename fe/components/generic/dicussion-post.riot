@@ -1,0 +1,46 @@
+<discussion-post>
+
+    <section class="post-body">
+        <div class="meta">
+            <div class="from">
+                <user u="{props.data.postedBy}"/>
+            </div>
+            <div class="title" if="{props.data.title}">
+                {props.data.title}
+            </div>
+            <div class="time" title="{localDate(props.data._created)}">
+                {relativeTime(props.data._created)}
+            </div>
+        </div>
+        <div class="content" if="{props.data.body}">
+            <raw html="{props.data.body}"/>
+        </div>
+    </section>
+    <new-post root={props.data.id} role="reply"/>
+
+    <div class="sub-discussion">
+        <discussion parentId="{props.parentid}" root="{props.data.id}" level="{props.level}" config="{props.config}"/>
+    </div>
+    <script>
+        import Raw from './raw.riot'
+        import {localDate} from "../../lib/utils";
+        import {relativeTime} from "short-relative-time";
+        import User from './user.riot'
+        import NewPost from './new-post.riot'
+
+        export default {
+
+            components: {
+                Raw,
+                User,
+                NewPost,
+            },
+            localDate,
+            relativeTime,
+            postSent() {
+                // ?
+            },
+
+        }
+    </script>
+</discussion-post>

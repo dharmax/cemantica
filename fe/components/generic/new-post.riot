@@ -1,0 +1,57 @@
+<new-post>
+    <button class="open-button" if={!oneIsOpen()} onclick="{openPostComposer}">{props.role}</button>
+    <form if="{state.newPost}">
+        <input type="text" ref="title" placeholder="optional title">
+        <textarea ref="body" cols="30" rows="10"/>
+        <div class="control">
+            <button onclick="{sendPost}">Send</button>
+            <button onclick="{closePostComposer}">Cancel</button>
+        </div>
+
+    </form>
+    <script>
+
+        import {discussionStore} from "../../viewmodel/discussion-store";
+        import {Alert, Info} from "../../services/alert-service";
+        import dispatcher from "../../lib/dispatcher";
+
+        /**
+         * props:
+         *  root - the id of the entity this post references
+         *  role - the title of the open button
+         *  callback - the method to which to call after completion
+         */
+        export default {
+            async sendPost() {
+                let {title, body} = this.collectValues()
+                const type = 'Normal'
+                title = title && title.trim() || undefined
+                body = body && body.trim() || undefined
+                if ((!title || !title.length) && (!body || !body.length)) {
+                    Alert('You must have either a title, body or both')
+                    return
+                }
+
+                await discussionStore.create({title, body, rootEntityId: this.props.root})
+                Info('Post send successfully!')
+                this.closePostComposer()
+
+                dispatcher.trigger('new-post', 'discussion-post:sent', {root: this.props.root})
+
+            },
+            oneIsOpen() {
+                return window.oneIsOpen
+            },
+            openPostComposer() {
+                if (this.oneIsOpen())
+                    return
+                window.oneIsOpen = true
+                this.update({newPost: true})
+            },
+            closePostComposer() {
+                window.oneIsOpen = false
+                this.update({newPost: false})
+            }
+        }
+    </script>
+</new-post>

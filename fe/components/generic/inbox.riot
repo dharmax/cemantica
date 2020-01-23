@@ -1,0 +1,46 @@
+<inbox>
+
+    <div class="list">
+        <div each="{n in state.notifications}" onclick="{()=>viewMessage(n)}">
+            {displayableHeader(n)}
+        </div>
+    </div>
+    <div class="control">
+
+    </div>
+
+    <template if="{state.messageToShow}">
+        <message-viewer message="{state.messageToShow}" onClose="{()=>update({messageToShow: null})}"/>
+    </template>
+
+
+    <script>
+
+        import dispatcher from "../../lib/dispatcher";
+        import {userStore} from "../../viewmodel/user-store";
+        import MessageViewer from './message-viewer.riot'
+
+        export default {
+
+            components: {
+                MessageViewer
+            },
+            async onMounted() {
+
+                const notifications = await userStore.getNotifications()
+                this.update({
+                    notifications,
+                })
+
+            },
+            displayableHeader(n) {
+
+                const related = n.related.map(r => `${r.role} ${r.label}`).join(', ')
+                return `${n.eventName} ${related}`
+            },
+            viewMessage(n) {
+                this.update({messageToShow: n})
+            }
+        }
+    </script>
+</inbox>

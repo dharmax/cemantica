@@ -1,0 +1,37 @@
+<follow-button>
+    <div if="{!state.isSelf && state.session}">
+        <span class="action" if="{state.followed}" onclick="{follow(false)}" title="Unfollow">Following</span>
+        <span class="action" if="{!state.followed}" onclick="{follow(true)}">Follow</span>
+        <span class="extra">
+            <span class="follows" if="{state.follows}">follows you</span>
+            <span class="isFriend" if="{state.friend}">friends</span>
+        </span>
+    </div>
+    <script>
+
+        import {getSession} from "../../services/session-manager";
+        import {userStore} from "../../viewmodel/user-store";
+
+        let writerId
+        export default {
+            async onMounted() {
+                const session = await getSession()
+                writerId = this.props.wid
+                const userId = session && session.userId;
+                const isSelf = userId === writerId
+                const friendship = (isSelf || !session) ? {} : await userStore.getFriendship(userId, writerId)
+                this.update({
+                    session,
+                    isSelf,
+                    ...friendship
+                })
+            },
+            follow(follow) {
+                return () => {
+                    userStore.setFollow(writerId, follow)
+                        .then(friendship => this.update(friendship))
+                }
+            }
+        }
+    </script>
+</follow-button>
