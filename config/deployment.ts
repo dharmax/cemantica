@@ -1,7 +1,7 @@
 import {getDockerHostIp} from "./docker-support";
 import {RunMode, runMode} from "./run-mode";
 
-export const applicationName = 'whisperation'
+export const applicationName = 'paramita'
 export const apiVersion = '1.0.0'
 
 export const debugTimeOffset = 0

@@ -3,10 +3,6 @@
   "version": "0.0.1",
   "license": "Commercial",
   "scripts": {
-    "postinstall": "npm run build",
-    "build": "./build.sh",
-    "test": "npm run build; node_modules/mocha/bin/mocha tests",
-    "start": "node whisperation-server.js"
   },
   "dependencies": {
     "@hapi/bell": "^11.1.0",
