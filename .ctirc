@@ -1,0 +1,41 @@
+// created from 'create-ts-index'
+
+{
+  addNewline: true,
+  excludes: [
+    '@types',
+    'typings',
+    '__test__',
+    '__tests__',
+    'node_modules',
+    '.git',
+    'dist'
+
+  ],
+  fileExcludePatterns: [],
+  fileFirst: false,
+  globOptions: {
+    cwd: '/home/dharmax/work/WebstormProjects/cemantika',
+    dot: true,
+    ignore: [
+      '@types/**',
+      'typings/**',
+      '__test__/**',
+      '__tests__/**',
+      'node_modules/**',
+    ],
+    nonull: true,
+  },
+  includeCWD: true,
+  output: 'index.ts',
+  quote: "'",
+  targetExts: [
+    'ts',
+    'tsx',
+  ],
+  useSemicolon: true,
+  useTimestamp: false,
+  verbose: false,
+  withoutBackupFile: false,
+  withoutComment: false,
+}

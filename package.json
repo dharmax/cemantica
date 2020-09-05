@@ -1,13 +1,18 @@
 {
   "name": "cemantica",
+  "description": "Cemantika framework",
   "version": "0.0.4",
   "license": "Commercial",
   "scripts": {
-    "postinstall": "npm run build",
-    "build": "./build.sh",
-    "test": "npm run build; node_modules/mocha/bin/mocha tests",
-    "start": "node whisperation-server.js"
+    "prepublish": "tsc; node_modules/create-ts-index/dist/cti.js create .",
+    "test": "npm run build; node_modules/mocha/bin/mocha tests"
   },
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dharmax/cemantica.git"
+  },
+  "types": "dist/index.d.ts",
   "dependencies": {
     "@hapi/bell": "^12.1.0",
     "@hapi/boom": "^9.1.0",
@@ -15,11 +20,12 @@
     "@hapi/inert": "^6.0.1",
     "@hapi/joi": "^17.1.1",
     "@hapi/vision": "^6.0.0",
-    "@riotjs/compiler": "^4.9.3",
+    "@riotjs/compiler": "^4.11.0",
     "@riotjs/ssr": "^4.2.1",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.7.2",
     "bunyan": "^2.0.4",
+    "create-ts-index": "^1.13.5",
     "docker-host-ip": "^1.0.1",
     "ejs": "^3.1.3",
     "fast-deep-equal": "^3.1.3",
@@ -68,11 +74,6 @@
     "should": "^13.2.3",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
-  },
-  "description": "Whisperation server",
-  "main": "whisperation-server.js",
-  "directories": {
-    "lib": "lib"
   },
   "keywords": [
     "creativity",
