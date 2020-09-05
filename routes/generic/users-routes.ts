@@ -4,7 +4,8 @@ import {
     joiIdOrSelfRule,
     joiIdRule,
     joiLanguage,
-    ReadQueryValidator
+    readQueryValidator,
+    readQueryValidatorPlain
 } from "../routing-utils";
 import * as joi from '@hapi/joi'
 import {userController} from "../../model-controllers/generic/user-controller";
@@ -20,10 +21,10 @@ export const userRoutes = [
         path: '/api/users/search',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     string: joi.string().required(),
                     projection: joi.array().items(joi.string().max(30))
-                }
+                }).required()
             },
             description: "search-user. search by user's name or email. Returns by default id, fullname, city, pictureUrl",
             tags: ['api', 'user', 'search']
@@ -37,12 +38,12 @@ export const userRoutes = [
         path: '/api/users/new',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     email: joi.string().email().required(),
                     name: joi.string().min(4).max(25).trim().required(),
                     realName: joi.string().max(25).trim(),
-                    password: joi.string().max(30).required(),
-                }
+                    password: joi.string().max(130).required(),
+                }).required()
             },
             description: 'Administrative operation for directly adding users',
             tags: ['api', 'user', 'admin']
@@ -56,9 +57,9 @@ export const userRoutes = [
         path: '/api/users/resetProfilePicture',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     source: joi.string().required()
-                }
+                }).required()
             },
             description: "reset-user-picture. re-set the user's profile picture. If the source says 'facebook' then " +
                 "it is read from the facebook profile, otherwise it is treated as a url to a picture",
@@ -73,10 +74,10 @@ export const userRoutes = [
         path: '/api/users/log',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     title: joi.string().max(512),
                     entries: joi.array().items(joi.object()).required()
-                }
+                }).required()
             },
             description: "write-client-log. write a long entry to the client log",
             tags: ['api', 'user', 'logging', 'debug', 'support']
@@ -101,9 +102,9 @@ export const userRoutes = [
         path: '/api/users/{userId}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     userId: joiIdRule.required()
-                }
+                }).required()
             },
             description: "get-public-profile",
             tags: ['api', 'user', 'profile']
@@ -116,9 +117,9 @@ export const userRoutes = [
         path: RESET_PASSWORD_API_PATH + '{token}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     token: joi.string().required()
-                }
+                }).required()
             },
             description: "The second phase of the reset password call (from the email). Redirects to a new page",
             tags: ['api', 'user', 'password', 'reset']
@@ -132,18 +133,18 @@ export const userRoutes = [
         path: '/api/users/changePassword/{token}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     token: joi.string().optional()
-                },
-                payload: {
-                    newPassword: joi.string().min(6).max(100)
-                }
+                }).required(),
+                payload: joi.object({
+                    newPassword: joi.string().min(6).max(130)
+                }).required()
             },
             description: "change-password-final. The final phase of the reset password - set a new password",
             tags: ['api', 'user', 'password', 'reset']
         },
         handler: async (request, h) => {
-            return h.handle(userController, userController.changePassword, request.params.token, request.payload.newPassword)
+            return userController.changePassword(null, request.params.token, request.payload.newPassword)
         }
     },
     {
@@ -151,9 +152,9 @@ export const userRoutes = [
         path: '/api/users/resetPassword',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     email: joi.string().email().required()
-                }
+                }).required()
             },
             description: "reset-password-start. Create a password reset mini-session (and sends email)",
             tags: ['api', 'user', 'password', 'reset']
@@ -178,10 +179,10 @@ export const userRoutes = [
         path: '/api/users/{userId}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     userId: joiIdOrSelfRule.required()
-                },
-                payload: {
+                }).required(),
+                payload: joi.object({
                     name: joi.string().min(4).max(25).trim(),
                     realName: joi.string().max(25).trim(),
                     generalBio: joi.string().max(1024),
@@ -197,14 +198,13 @@ export const userRoutes = [
                         preferredLanguage: joiLanguage,
                         digestIntervalInDays: joi.number().min(0.5).default(7)
                     })
-                }
+                }).required()
             },
             description: "update-user. Update a user information. Privilege subjected",
             tags: ['api', 'user', 'profile', 'privilege']
         },
         handler: async (request, h) => {
             try {
-
                 return h.handle(userController, userController.updateUserPersonalData, request.params.userId, request.payload)
             } catch (e) {
                 return Boom.badData(e.message)
@@ -217,10 +217,10 @@ export const userRoutes = [
         path: '/api/users/changePhoneNumber',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     newNumber: joi.string().regex(/^\+?[0-9()-]+$/),
                     userId: joiIdRule
-                }
+                }).required()
             },
             description: "Update a user phone number: first phase",
             tags: ['api', 'user', 'profile', 'phone']
@@ -234,10 +234,10 @@ export const userRoutes = [
         path: '/api/users/confirmPhoneNumberChange',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     pin: joi.number().required(),
                     phone: joi.string().required()
-                }
+                }).required()
             },
             description: "Update a user phone number: confirmation phase",
             tags: ['api', 'user', 'profile', 'phone']
@@ -250,7 +250,7 @@ export const userRoutes = [
         path: '/api/users',
         config: {
             validate: {
-                query: new ReadQueryValidator(30, '')
+                query: readQueryValidator(30, '').required()
             },
             description: 'read user list',
             notes: 'user list is censored ',
@@ -266,12 +266,13 @@ export const userRoutes = [
         path: '/api/users/managed-objects/{userId}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     userId: joiIdRule.required()
-                },
-                query: Object.assign({
+                }).required(),
+                query: joi.object({
                     objectType: joi.string().min(3).max(15).required()
-                }, new ReadQueryValidator(100))
+                    , ...readQueryValidatorPlain(100)
+                }).required()
             },
             description: 'Returns a list of all the objects of the given type the use has ANY EXPLICIT role at.',
             tags: ['api', 'pagination', 'roles']
@@ -279,15 +280,16 @@ export const userRoutes = [
         handler: async (request, h) => {
             return h.handle(userController, userController.getManagedObjects, request.params.userId, request.query.objectType, decodePagination(request.query))
         }
-    }, {
+    },
+    {
         method: 'POST',
         path: '/api/users/subscribe',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     user: joiIdRule.required(),
                     state: joi.boolean().required()
-                }
+                }).required()
             },
             description: "Subscribe or unsubscribe to a user. Return friendship record (see get-friendship)",
             tags: ['api', 'user', 'subscription']
@@ -301,10 +303,10 @@ export const userRoutes = [
         path: '/api/users/friendship',
         config: {
             validate: {
-                query: {
+                query: joi.object({
                     sourceId: joiIdRule.required(),
                     targetId: joiIdRule.required(),
-                }
+                }).required()
             },
             description: "Return {follows:boolean, followed:boolean, friend:boolean}",
             tags: ['api', 'user', 'subscription', 'friendship']
@@ -318,9 +320,9 @@ export const userRoutes = [
         path: '/api/users/subscriptions',
         config: {
             validate: {
-                query: {
+                query: joi.object({
                     userId: joiIdRule,
-                }
+                }).required()
             },
             description: "Return subscriptions and subscribers for a user (or self)",
             tags: ['api', 'user', 'subscription']
@@ -334,11 +336,11 @@ export const userRoutes = [
         path: '/api/users/rating',
         config: {
             validate: {
-                query: {
+                query: joi.object({
                     userId: joiIdRule,
                     entityId: joiIdRule.required(),
                     entityType: joi.string().max(30),
-                }
+                }).required()
             },
             description: "Return rating and comments for the entity given by the user",
             tags: ['api', 'user', 'rating', 'comments']
@@ -354,12 +356,12 @@ export const userRoutes = [
         path: '/api/users/rate',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     entityId: joiIdRule.required(),
                     entityType: joi.string().max(30).required(),
                     value: joi.number().min(1).max(10).required(),
                     comment: joi.string().max(8000).allow('')
-                }
+                }).required()
             },
             description: "Rate an entity",
             tags: ['api', 'user', 'rating', 'comments']
@@ -373,10 +375,10 @@ export const userRoutes = [
         path: '/api/users/feedback',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     type: joi.string().allow('Bug', 'Question', 'Suggestion', 'Other').required(),
                     text: joi.string().max(8000).required()
-                }
+                }).required()
             },
             description: "feedback submission",
             tags: ['api', 'user', 'feedback']
@@ -401,9 +403,9 @@ export const userRoutes = [
         path: '/api/users/notifications',
         config: {
             validate: {
-                query: {
+                query: joi.object({
                     includingUnread: joi.boolean().default(true)
-                }
+                }).required()
             },
             description: 'get user pending notifications',
             tags: ['api', 'user', 'notifications']
@@ -417,33 +419,32 @@ export const userRoutes = [
         path: '/api/users/notifications/read/{id}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     id: joiIdRule.required()
-                },
-                payload: {
-                    isRead: joi.boolean().default(true)
-                }
+                }).required(),
+                payload:
+                    joi.object({
+                        isRead: joi.boolean().default(true)
+                    }).required()
             },
             description: 'set the read flag of a notification. Return new notification unread count. Emits notification:status-changed event',
             tags: ['api', 'user', 'notifications']
-
         },
         handler: async (request, h) => {
             return h.handle(userController, userController.setNotificationRead, request.params.id, request.payload.isRead)
         }
-
-    }, {
+    },
+    {
         method: 'DELETE',
         path: '/api/users/notifications/{id}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     id: joiIdRule.required()
-                }
+                }).required()
             },
             description: 'delete a notification. Return new notification unread count. Emits notification:deleted event',
             tags: ['api', 'user', 'notifications']
-
         },
         handler: async (request, h) => {
             return h.handle(userController, userController.removeNotification, request.params.id)

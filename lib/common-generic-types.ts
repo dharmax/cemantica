@@ -1,9 +1,12 @@
+export type FilterFunction = (items: any[]) => Promise<any[]>
+
 export interface IReadOptions {
     from: number
     count: number
-    entityOnly?: boolean;
+    entityOnly?: boolean
     queryName?: string
     queryParams?: Object
+    filterFunction?: FilterFunction
     sort?: SortSpec
     projection?: string[]
     requestNumber?: number // created automatically
@@ -14,6 +17,7 @@ export interface IFriendship {
     followed
     friend
 }
+
 export type SortSpec = { [fieldName: string]: 1 | -1 }
 
 export interface IReadResult {

@@ -1,11 +1,9 @@
-import * as path from 'path';
+import {Server, ServerRoute} from '@hapi/hapi'
+import * as vision from '@hapi/vision'
+import * as inert from '@hapi/inert'
 
-import {Server} from '@hapi/hapi'
-import * as Lout from 'lout'
-import * as Vision from '@hapi/vision'
-import * as Inert from '@hapi/inert'
 
-import {routes} from '../api-routes';
+import {standardRoutes} from '../api-routes';
 import {journal, log} from "../services/generic/logger"
 import {initPrivilegesService, RoleDictionary} from "../services/generic/privilege-service";
 import {addAuthorizationStrategies, addHapiExtensions} from "./hapi-extentions";
@@ -17,34 +15,52 @@ import {initBroadcastService} from "../services/generic/managed-notification-ser
 import {QueryDictionary, storage} from "../services/generic/storage";
 import {configTemplateEngine} from "./ssr-template-init";
 
+import {render} from "@riotjs/ssr";
 
-export async function startApplication(ontology: IRawOntology, roleDictionary: RoleDictionary, queryDictionary: QueryDictionary, superuserEmail) {
+
+require('@riotjs/ssr/register')()
+// @ts-ignore
+const MyComponent = require('../../ssr-fe/my-component.riot')
+
+export interface IServerConfig {
+    templateEngineFilesRoot: string
+    ontology: IRawOntology,
+    roleDictionary: RoleDictionary,
+    queryDictionary: QueryDictionary,
+    superuserEmail: string,
+    frontEndPath: string,
+    applicationRoutes: ServerRoute[]
+}
+
+export async function startApplication(conf: IServerConfig) {
 
 ////////////////////////////////////////////////////////////////////
 
     process.on('unhandledRejection', (reason, p) => {
+        console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
         log.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
     })
 
 
     process.on('uncaughtException', err => {
+        console.error(`Uncaught exception: ${err}`)
         log.error(`Uncaught exception: ${err}`)
     });
 
 ////////////////////////////////////////////////////////////////////
 
 
-    initSemanticLayer(ontology)
-    initPrivilegesService(roleDictionary);
-    storage.setQueryDictionary(queryDictionary)
-    await startServer(routes)
+    initSemanticLayer(conf.ontology)
+    initPrivilegesService(conf.roleDictionary);
+    storage.setQueryDictionary(conf.queryDictionary)
+    await startServer([...standardRoutes, conf.applicationRoutes])
 
     async function startServer(routes) {
         const server = new Server({
             port: webServerPort,
             routes: {
                 files: {
-                    relativeTo: path.join(__dirname, 'fe', 'dist'),
+                    relativeTo: conf.frontEndPath,
                 },
                 validate: {
                     failAction: (request, h, err) => {
@@ -54,11 +70,12 @@ export async function startApplication(ontology: IRawOntology, roleDictionary: R
             }
         })
 
-        await server.register(Inert)
-        await server.register(Vision)
-        await server.register(Lout)
+        await server.register(inert)
+        await server.register(vision)
 
-        await configTemplateEngine(server)
+
+        await configTemplateEngine(server, conf.templateEngineFilesRoot)
+
 
         server.route([
             {
@@ -66,9 +83,16 @@ export async function startApplication(ontology: IRawOntology, roleDictionary: R
                 path: '/{param*}',
                 handler: {
                     directory: {
-                        path: path.join(__dirname, '..', 'fe', 'dist'),
+                        path: conf.frontEndPath,
                         showHidden: true
                     }
+                }
+            },
+            {
+                method: 'GET',
+                path: '/ssr/one',
+                handler: (r, tk) => {
+                    return render('my-component', MyComponent, {})
                 }
             },
         ])
@@ -102,7 +126,7 @@ export async function startApplication(ontology: IRawOntology, roleDictionary: R
             console.log('Server running at:', server.info.uri);
             journal('system', 'starting web-server', null, null)
 
-            await startupService(superuserEmail)
+            await startupService(conf.superuserEmail)
 
         } catch (err) {
             if (err) {

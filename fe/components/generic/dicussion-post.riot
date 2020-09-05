@@ -1,6 +1,7 @@
 <discussion-post>
 
-    <section class="post-body">
+    <details class="post-body">
+        <summary><span>{props.data.title} </span> <span class="name">{props.data.postedBy.name}</span></summary>
         <div class="meta">
             <div class="from">
                 <user u="{props.data.postedBy}"/>
@@ -15,12 +16,27 @@
         <div class="content" if="{props.data.body}">
             <raw html="{props.data.body}"/>
         </div>
-    </section>
-    <new-post root={props.data.id} role="reply"/>
 
-    <div class="sub-discussion">
-        <discussion parentId="{props.parentid}" root="{props.data.id}" level="{props.level}" config="{props.config}"/>
-    </div>
+        <new-post rolename="{'reply'}" root={props.data.id}/>
+
+        <div class="sub-discussion">
+            <discussion config="{props.config}" level="{props.level}" parentId="{props.parentid}"
+                        root="{props.data.id}"/>
+        </div>
+    </details>
+    <style>
+        details[open] > summary > span {
+            color: transparent;
+        }
+
+        details[open] > summary::marker {
+            color: black;
+        }
+
+        details summary .name {
+            float: right;
+        }
+    </style>
     <script>
         import Raw from './raw.riot'
         import {localDate} from "../../lib/utils";

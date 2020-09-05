@@ -1,39 +1,39 @@
 import {Server} from "@hapi/hapi";
 import * as Handlebars from "handlebars";
-import * as path from "path";
-import {number} from "@hapi/joi";
-import {piecesController} from "../model-controllers/specific/pieces-controller";
+import {number, object} from "@hapi/joi";
 
-export function configTemplateEngine(server: Server) {
+export function configTemplateEngine(server: Server, templateEngineFilesRoot: string) {
 
     // @ts-ignore
     server.views({
         engines: {
             html: Handlebars,
         },
-        relativeTo: path.join(__dirname, '..', 'ssr-fe'),
-        path: 'templates'
+        relativeTo: templateEngineFilesRoot,
+        path: '.'
     })
 
     // @ts-ignore
-    server.route([{
-        method: 'GET',
-        path: '/content',
-        handler: contentHandler
-    }, {
-        method: 'GET',
-        path: '/content/{page}',
-        //@ts-ignore
-        config: {
-            validate: {
-                params: {
-                    page: number().required()
+    server.route([
+        {
+            method: 'GET',
+            path: '/content',
+            handler: contentHandler
+        }, {
+            method: 'GET',
+            path: '/content/{page}',
+            //@ts-ignore
+            config: {
+                validate: {
+                    params: object({
+                        page: number().required()
+                    }).required()
                 }
-            }
-        },
-        handler: contentHandler
-    }
+            },
+            handler: contentHandler
+        }
     ]);
+
     Handlebars.registerHelper({
         eval: expr => {
             const func = new Function('context', 'return ' + expr)
@@ -71,5 +71,5 @@ async function contentHandler(r, h) {
     context.followUp = a
 
     //@ts-ignore
-    return h.view('index', context)
+    return h.view('templates/static-content', context)
 }

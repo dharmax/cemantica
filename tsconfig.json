@@ -6,17 +6,19 @@
       "dom",
       "esnext"
     ],
-    "outDir": ".",
+    "outDir": "dist",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
     "noImplicitAny": false,
-    "noEmitOnError": false
+    "noEmitOnError": false,
+    "declaration": false
   },
   "exclude": [
     "node_modules",
     "build",
-    "fe"
+    "fe",
+    "dist"
   ]
 }

@@ -16,9 +16,8 @@ import {IReadOptions, IReadResult} from "../../lib/common-generic-types";
 import {processTemplate} from "../../lib/template-processor";
 import {ProjectionItem, ProjectionPredicateItem} from "../../routes/routing-utils";
 
-declare class User { // needed to avoid circular dependency
+declare class User {
 
-    static createFromDB(User: User, uid: any)
 }
 
 export abstract class AbstractEntity implements IPermissionManaged {
@@ -200,11 +199,11 @@ export abstract class AbstractEntity implements IPermissionManaged {
         return this.populate(...Object.keys(this.template))
     }
 
-    async fullDto(options?: unknown): Promise<Object> {
+    async fullDto<T>(options?: unknown): Promise<T> {
         const data = await this.getFields(...Object.keys(this.template), '_created', '_lastUpdate')
         data.id = this.id
         data._entityType = this.typeName()
-        return data
+        return data as T;
     }
 
     protected async populate<E extends AbstractEntity>(...projection: ProjectionItem[]): Promise<E> {
@@ -271,7 +270,7 @@ export abstract class AbstractEntity implements IPermissionManaged {
         let containers = await this.getContainers()
         containers && containers.forEach(async c => userIds.push(...(await c.getInterestedParties(eventType))))
 
-        return Promise.all(userIds.map(uid => User.createFromDB(User, uid)))
+        return Promise.all(userIds.map(uid => <Promise<User>>AbstractEntity.createFromDB('User', uid)))
     }
 
     async outgoingPreds(predicateName: string, opts: IFindOptions = {}): Promise<Predicate[]> {

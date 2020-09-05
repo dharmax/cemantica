@@ -1,6 +1,6 @@
 import * as joi from "@hapi/joi"
 import {adminController} from "../../model-controllers/generic/admin-controller";
-import {decodePagination, joiIdRule, ReadQueryValidator} from "../routing-utils";
+import {decodePagination, joiIdRule, readQueryValidator} from "../routing-utils";
 
 export const adminRoutes = [
     {
@@ -8,11 +8,11 @@ export const adminRoutes = [
         path: '/api/admin/journal/query',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     from: joi.date(),
                     to: joi.date().default(new Date().getTime() + 5 * 60000), // this is the now, with the strange offset the logger write...
                     query: joi.object().default({})
-                },
+                }).required(),
             },
             description: `query-journal. perform a query over the journal`,
             tags: ['api', 'journal', 'admin', 'query', 'log']
@@ -26,7 +26,7 @@ export const adminRoutes = [
         path: '/api/admin/client-log/query',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     reportRangeStart: joi.date(),
                     reportRangeEnd: joi.date(),
                     userId: joiIdRule,
@@ -35,7 +35,7 @@ export const adminRoutes = [
                     limit: joi.number().integer().positive().default(100),
                     group: joi.string().alphanum().max(10),
                     text: joi.string().max(40).optional()
-                },
+                }).required(),
             },
             description: `query-client-log. perform a query over the the client report`,
             tags: ['api', 'client log', 'admin', 'query', 'log']
@@ -49,10 +49,10 @@ export const adminRoutes = [
         path: '/api/admin/entity/{entityType}/{entityId}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     entityType: joi.string().alphanum().max(20).required(),
                     entityId: joiIdRule.required()
-                }
+                }).required()
             },
             description: `delete-entity. Deletes an entity. Used mostly for admin and testing/debugging`,
             tags: ['api', 'system', 'admin', 'database', 'debug']
@@ -67,14 +67,14 @@ export const adminRoutes = [
         path: '/api/admin/entity/{entityType}/{entityId}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     entityType: joi.string().alphanum().max(20).required(),
                     entityId: joiIdRule.required(),
-                },
-                query: {
+                }).required(),
+                query: joi.object({
                     oDepth: joi.number().positive().integer().default(1),
                     iDepth: joi.number().positive().integer().default(1),
-                }
+                }).required()
             },
             description: `get-entity. Get an entity. Used mostly for admin and testing/debugging`,
             tags: ['api', 'system', 'admin', 'database', 'debug']
@@ -99,10 +99,10 @@ export const adminRoutes = [
         path: '/api/admin/browse/{entityType}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     entityType: joi.string().max(40)
-                },
-                query: new ReadQueryValidator(50),
+                }).required(),
+                query: readQueryValidator(50).required(),
             },
             description: `browse-entities-simple. browse a specific entity Type`,
             tags: ['api', 'db', 'admin', 'database', 'ontology', 'pagination', 'query']
@@ -116,13 +116,13 @@ export const adminRoutes = [
         path: '/api/admin/browse/{entityType}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     entityType: joi.string().max(40)
-                },
-                query: new ReadQueryValidator(50),
-                payload: {
+                }).required(),
+                query: readQueryValidator(50).required(),
+                payload: joi.object({
                     query: joi.object()
-                }
+                }).required()
             },
             description: `browse-entities-query. browse a specific entity Type`,
             tags: ['api', 'db', 'admin', 'database', 'ontology', 'pagination', 'query']
@@ -136,11 +136,11 @@ export const adminRoutes = [
         path: '/api/admin/xray/{entityType}/{entityId}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     entityType: joi.string().max(40),
                     entityId: joiIdRule
-                },
-                query: new ReadQueryValidator(50),
+                }).required(),
+                query: readQueryValidator(50),
             },
             description: `xray-entity. xray a specific entity`,
             tags: ['api', 'db', 'admin', 'database', 'ontology', 'pagination', 'query']
@@ -155,13 +155,13 @@ export const adminRoutes = [
         path: '/api/admin/set-admin-role/{roleName}/{userId}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     roleName: joi.allow('Admin', 'SubAdmin').required(),
                     userId: joiIdRule.required(),
-                },
-                payload: {
+                }).required(),
+                payload: joi.object({
                     on: joi.boolean().default(true)
-                }
+                }).required()
             },
             description: `Set or unset an admin role`,
             tags: ['api', 'admin', 'permissions']
@@ -188,14 +188,14 @@ export const adminRoutes = [
         path: '/api/admin/changeEntity/{type}/{id}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     type: joi.string().max(30).required(),
                     id: joiIdRule.required(),
-                },
-                payload: {
+                }).required(),
+                payload: joi.object({
                     fieldName: joi.string().max(40).required(),
-                    fieldValue: joi.string().max(40).required(),
-                }
+                    fieldValue: joi.string().max(40000).required(),
+                }).required()
             },
             description: `Modifies any entity`,
             tags: ['api', 'admin', 'modify', 'edit', 'change', 'entity']

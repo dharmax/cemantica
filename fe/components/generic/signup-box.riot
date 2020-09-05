@@ -64,8 +64,8 @@
     <script>
         import {Alert} from '../../services/alert-service'
         import {signup, finalSignupPhase} from "../../services/session-manager";
-        import {hash} from 'bcryptjs'
         import {stateManager} from "../../lib/state-manager";
+        import {hashPassword} from "../../lib/api-helper";
 
         export default {
             localize: s => s,
@@ -79,7 +79,7 @@
                 if (fields._errors)
                     return
 
-                fields.password = await hash(fields.pw1, 10)
+                fields.password = await hashPassword(fields.pw1)
                 const remember = fields.remember;
                 ['pw1', 'pw2', 'remember'].forEach(f => delete fields[f])
                 this.token = await signup(fields, remember)

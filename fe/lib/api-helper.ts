@@ -1,5 +1,6 @@
 import {buildUrl} from './build-url'
 import {Alert} from "../services/alert-service";
+import {sha256} from "./sha256";
 
 export const baseUrl = window.location.origin
 
@@ -22,6 +23,12 @@ export interface IReadResult {
     total?: number
     totalFiltered: number
     opts?: IReadOptions
+}
+
+
+export function hashPassword(pw: string): string {
+
+    return sha256(pw)
 }
 
 export async function post(url: string, data: object, conf_: any = {}) {

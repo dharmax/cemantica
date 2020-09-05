@@ -9,9 +9,9 @@ export const sessionRoutes = [
         path: '/api/is-alive',
         config: {
             validate: {
-                query: {
+                query: joi.object({
                     code: joi.number().optional()
-                }
+                }).required()
             },
             description: 'checks if the application is alive',
             notes: 'bla',
@@ -26,9 +26,9 @@ export const sessionRoutes = [
         path: '/api/session/{token}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     token: joi.string().required()
-                }
+                }).required()
             },
             description: `Returns the current session object for the token.
                 If the session is not recognizes, return "unknown". `,
@@ -47,10 +47,10 @@ export const sessionRoutes = [
         path: '/api/session/login',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     email: joi.string().email().required(),
                     password: joi.string().min(1).max(80).required(),
-                }
+                }).required()
             }
             ,
             description: `Creates a session for an existing user`,
@@ -67,14 +67,14 @@ export const sessionRoutes = [
         config:
             {
                 validate: {
-                    payload: {
+                    payload: joi.object({
                         name: joi.string().min(5).max(20).required(),
                         password: joi.string().min(6).max(80).required(),
                         email: joi.string().email().required(),
                         phone: joi.string().regex(/^\+?[0-9()-]+$/),
                         language: joi.string().length(2).default('en'),
                         country: joi.string().allow('Israel', 'USA').default('USA').optional()
-                    }
+                    }).required()
                 },
                 description: `Sign up a new user`,
                 tags: ['system', 'api', 'session']
@@ -104,11 +104,11 @@ export const sessionRoutes = [
         path: '/api/session/signup/confirm',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     validationToken: joi.string().required(),
                     emailCode: joi.string().max(5).required(),
                     smsCode: joi.string().max(5),
-                }
+                }).required()
             }
             ,
             description: `Sign up a new user`,
@@ -128,9 +128,9 @@ export const sessionRoutes = [
         path: '/api/session/logout/{token}',
         config: {
             validate: {
-                params: {
+                params: joi.object({
                     token: joi.string().required()
-                }
+                }).required()
             },
             description: `terminates a session`,
             tags: ['system', 'api', 'session']

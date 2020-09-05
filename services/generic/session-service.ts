@@ -113,13 +113,15 @@ export async function loginUser(sessionDummy: any, loginInfo: { email: string, p
     if (!user)
         return Boom.unauthorized('email not found')
     if (runMode === RunMode.production || forceAuthentication) {
-        if ((await user.getField('password')) != loginInfo.password)
+        const dbPassword = await user.getField('password')
+        if (dbPassword !== loginInfo.password)
             return Boom.unauthorized('bad password')
     }
     const session = await createUserSession(user, {applicationId: loginInfo.applicationId})
     // noinspection ES6MissingAwait
     user.update({lastActive: new Date()})
     journal(user.id, 'login', null, await user.getField('name'))
+    // noinspection ES6MissingAwait
     sendLoginNotifications && notifyUser(user, getTemplate('LoginNotification'), {date: new Date()})
     return getSessionByToken(session.token)
 }

@@ -34,11 +34,10 @@
     </section>
 
     <script>
-        import {hash} from 'bcryptjs'
         import {passwordLogin, ssoLogin} from "../../services/session-manager";
         import {Alert} from "../../services/alert-service";
         import {Invalid} from "../../lib/utils";
-        import {post} from "../../lib/api-helper";
+        import {post, hashPassword} from "../../lib/api-helper";
 
         const nextUrl = "/"
 
@@ -58,9 +57,9 @@
                 const {email, password, rememberMe, _errors} = this.collectValues()
                 if (_errors)
                     return
-                await hash(password, 10)
+                const hashedPassword = hashPassword(password)
                 // noinspection ES6MissingAwait
-                passwordLogin(email, password, rememberMe)
+                passwordLogin(email, hashedPassword, rememberMe)
             },
             facebookLogin() {
                 // = () => services.session.facebookLogin(nextUrl),

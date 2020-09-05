@@ -21,11 +21,11 @@ export const jobManagerRoutes = [
         path: '/api/job-manager/schedule',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     prototypeName: joi.string().max(50).required(),
                     cron: joiCronStringRule,
                     once: joi.boolean().default(false),
-                }
+                }).required()
             },
             description: `Schedule job. Returns the job id. Uses cron timing syntax. It can be a recurring or run-once. `,
             notes: `Permissions are checked according to the specific operation's rules`,
@@ -40,12 +40,12 @@ export const jobManagerRoutes = [
         path: '/api/job-manager/prototype',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     name: joi.string().max(50).required(),
                     operation: joi.string().max(30).required(),
                     data: joi.object(),
                     description: joi.string().max(1024)
-                }
+                }).required()
             },
             description: `Add/modify a new job prototype.`,
             notes: `Admin only. The prototypeName is the key - if it doesn't exist it adds, if it does - it changes it`,
@@ -71,7 +71,7 @@ export const jobManagerRoutes = [
         method: 'GET',
         path: '/api/job-manager/operations',
         config: {
-            validate: {},
+            // validate: {},
             description: `Get the job operations list`,
             tags: ['api', 'admin', 'jobs', 'prototype', 'operations']
         },
@@ -84,10 +84,10 @@ export const jobManagerRoutes = [
         path: '/api/job-manager/executeNow',
         config: {
             validate: {
-                payload: {
+                payload: joi.object({
                     jobId: joi.string().max(50),
                     prototypeName: joi.string().max(50),
-                }
+                }).required()
             },
             description: `Execute a job instantly, either from the scheduler or the prototype`,
             tags: ['api', 'admin', 'jobs']

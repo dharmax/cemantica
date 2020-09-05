@@ -140,7 +140,7 @@ export const userController = {
     },
 
     async changePassword(session, token: string, newPassword: string) {
-        if (session.userId)
+        if (session && session.userId)
             return userController.updateUserPersonalData(session, "me", {password: newPassword})
         else
             return resetPasswordService.finalizeResetPassword(token, newPassword)

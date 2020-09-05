@@ -489,6 +489,7 @@ discussion, [is="discussion"] {
   .order {
     font-size: 0.8em;
   }
+
   .sub-discussion {
     //margin-left: 2em;
   }
@@ -544,6 +545,8 @@ discussion, [is="discussion"] {
 
 new-post {
   background: transparent;
+  display: flex;
+  flex-direction: column;
 
   input {
     outline: 1px solid silver;
@@ -558,7 +561,14 @@ new-post {
   }
 
   .open-button {
-    align-self: flex-end;
+    align-self: flex-start;
+  }
+
+  &[role='reply'] {
+    .open-button {
+      //float: right;
+      align-self: flex-end;
+    }
   }
 }
 
@@ -568,9 +578,11 @@ new-post {
     border-radius: 0.5em;
     background-color: @label-color;
     color: white;
+
     &:hover {
       color: black;
     }
+
     &:disabled {
       background-color: gray;
     }

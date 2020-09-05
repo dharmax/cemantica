@@ -11,7 +11,7 @@ import {
 } from "mongodb"
 
 import {Mutex} from '../../lib/mutex'
-import {IReadOptions, IReadResult} from '../../lib/common-generic-types'
+import {FilterFunction, IReadOptions, IReadResult} from '../../lib/common-generic-types'
 import {getDatabaseName, getDatabaseUrl} from "../../config/deployment";
 import {AbstractEntity} from "../../model/generic-entities/abstract-entity";
 import {makeEntity, SemanticPackage} from "../../model/model-manager";
@@ -188,8 +188,7 @@ export class Collection {
             return null
         if (!this.clazz)
             return record
-        const e = <T>makeEntity(this.clazz, record._id, record)
-        return e
+        return <T>makeEntity(this.clazz, record._id, record)
     }
 
     async find(query, options: IFindOptions = {}): Promise<Cursor> {
@@ -220,7 +219,6 @@ export class Collection {
         }
     }
 
-
     async distinct(field: string, query, options: IFindOptions = {}): Promise<any> {
         return this.collection.distinct(field, query)
     }
@@ -230,10 +228,16 @@ export class Collection {
         // @ts-ignore
         const cursor = await this.find(...arguments)
         const arrayP = await cursor.toArray()
-        return this.clazz ?
+
+        let result = this.clazz ?
             map(arrayP, rec => makeEntity(this.clazz, rec['_id'], rec))
             :
             arrayP
+
+        if (options.filterFunction)
+            result = await options.filterFunction(await result)
+
+        return result as T[]
     }
 
     async findSomeStream<T>(query, options: IFindOptions, format = StreamFormats.strings): Promise<Cursor<T>> {
@@ -269,16 +273,17 @@ export class Collection {
         return some.length ? some[0] : null
     }
 
-    async load(opt: IReadOptions, query?: Object): Promise<IReadResult> {
+    async load<T>(opt: IReadOptions, query?: Object): Promise<IReadResult> {
 
         query = query || storage.getQueryFromReadOptions(this, opt) || {}
         let r = await props({
-            items: opt ? this.findSome(query, {
+            items: (opt ? this.findSome(query, {
                 limit: opt.count,
                 from: opt.from,
                 projection: opt.projection,
-                sort: opt.sort
-            }) : this.findSome(query),
+                sort: opt.sort,
+                filterFunction: opt.filterFunction
+            }) : this.findSome(query)),
             totalFiltered: this.count(query || {}),
         })
         return Object.assign(r, {opts: opt, total: -1})
@@ -381,10 +386,11 @@ async function getDb(): Promise<dbAndClient> {
 }
 
 export interface IFindOptions {
-    batchSize?: number;
-    limit?: number,
-    from?: number,
-    projection?: string[],
+    batchSize?: number
+    limit?: number
+    from?: number
+    projection?: string[]
+    filterFunction?: FilterFunction
     sort?: Object
 }
 

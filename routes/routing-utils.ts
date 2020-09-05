@@ -10,25 +10,28 @@ export type ProjectionPredicateItem = {
 
 export type ProjectionItem = string | ProjectionPredicateItem
 
-export class ReadQueryValidator {
+export function readQueryValidator(pageSize: number, ...defaultProjection: ProjectionItem[]) {
 
-    constructor(pageSize: number, ...defaultProjection: ProjectionItem[]) {
+    // @ts-ignore
+    return joi.object(readQueryValidatorPlain(...arguments))
+}
 
-        defaultProjection = defaultProjection.map(i => {
-            return (typeof i === 'string' ? i :
-                JSON.stringify(i).replace(/\,/g, '$$$'))
-        })
-        Object.assign(this, {
-            from: joi.number().default(0),
-            count: joi.number().default(pageSize),
-            queryParams: joi.string().max(200),
-            queryName: joi.string().max(20),
-            sort: joi.string().regex(/^(\w+:-?1,?)+$/),
-            entityOnly: joi.boolean().default(true),
-            projection: joi.string().default(defaultProjection.join(','))
-        })
+export function readQueryValidatorPlain(pageSize: number, ...defaultProjection: ProjectionItem[]) {
+
+    defaultProjection = defaultProjection.map(i =>
+        (typeof i === 'string' ? i : JSON.stringify(i).replace(/\,/g, '$$$'))
+    )
+    return {
+        from: joi.number().default(0),
+        count: joi.number().default(pageSize),
+        queryParams: joi.string().max(200),
+        queryName: joi.string().max(20),
+        sort: joi.string().regex(/^(\w+:-?1,?)+$/),
+        entityOnly: joi.boolean().default(true),
+        projection: joi.string().default(defaultProjection.join(','))
     }
 }
+
 
 export function decodePagination(pagination) {
 

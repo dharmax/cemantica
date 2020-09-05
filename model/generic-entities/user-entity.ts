@@ -6,6 +6,7 @@ import * as joi from '@hapi/joi'
 import {createPredicate, findPredicates, Predicate, predicatesBetween} from "../model-manager";
 import {Notification} from "./notification-entity";
 
+
 export class User extends AbstractEntity {
 
     constructor(id) {
@@ -181,12 +182,12 @@ export class User extends AbstractEntity {
         return preds.map(p => p.peer)
     }
 
-    async fullDto(options?: unknown): Promise<Object> {
+    async fullDto<T>(options?: unknown): Promise<T> {
         return {
-            ...super.fullDto(options),
+            ...await super.fullDto(options),
             isSuspended: await this.isSuspended(),
             isProfileFull: await this.isProfileFull()
-        };
+        } as unknown as T;
     }
 
     async getNotifications(includeUnread: boolean): Promise<Notification[]> {

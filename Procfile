@@ -1,1 +1,1 @@
-web: node ./whisperation-server.js
+web: node dist/whisperation-server.js

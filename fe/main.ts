@@ -16,8 +16,22 @@ import Discussion from './components/generic/discussion.riot'
     const el = document.getElementsByClassName('app')[0]
     const app = mountApp(el, {});
 
+    addStylesheets()
+
     // ...just so the bundling wouldn't throw out the styling
     app.styles = Style
     delete app.styles
 
 })()
+
+function addStylesheets() {
+    const urls = ["https://fonts.googleapis.com/css?family=Cherry+Swash|Courgette&display=swap",
+        "https://fonts.googleapis.com/icon?family=Material+Icons"
+    ]
+    for (let url of urls) {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        document.head.appendChild(link)
+    }
+}

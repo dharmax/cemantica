@@ -1,7 +1,7 @@
 import {getDockerHostIp} from "./docker-support";
 import {RunMode, runMode} from "./run-mode";
 
-export const applicationName = 'paramita'
+export const applicationName = 'whisperation'
 export const apiVersion = '1.0.0'
 
 export const debugTimeOffset = 0
@@ -13,7 +13,7 @@ export const MAX_JOURNAL_QUERY_RESULTS = 250
 
 
 // authentication services
-export const forceAuthentication = process.env.FORCE_AUTHENTICATION
+export const forceAuthentication = (process.env.FORCE_AUTHENTICATION === 'true')
 export const facebookClientId = process.env.FB_CLIENT_ID
 export const facebookClientSecret = process.env.FB_CLIENT_SECRET
 export const googleClientId = process.env.GOOGLE_CLIENT_ID

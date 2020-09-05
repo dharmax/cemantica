@@ -264,7 +264,7 @@ let templateDictionary: { [x: string]: MessageTemplate } = null
 
 export function getTemplate(name): MessageTemplate {
     if (!templateDictionary) {
-        initTemplates(join(rootPath, 'message-templates'))
+        initTemplates(join(rootPath, '..', 'message-templates'))
         extraMessageTemplatesRoot && initTemplates(extraMessageTemplatesRoot)
     }
 

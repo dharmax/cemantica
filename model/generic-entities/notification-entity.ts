@@ -49,7 +49,7 @@ export class Notification extends AbstractEntity {
         col.ensureIndex({_created: 1})
     }
 
-    async fullDto(options?: unknown): Promise<Object> {
+    async fullDto<T>(options?: unknown): Promise<T> {
         const relatedEntitiesPreds = await this.outgoingPreds('relates-to', {projection: ['name', 'title']})
         const related = relatedEntitiesPreds.map(p => {
             return {
@@ -61,9 +61,9 @@ export class Notification extends AbstractEntity {
 
         })
         return {
-            ...await super.fullDto(options),
+            ...await super.fullDto(options) as T,
             related
-        };
+        } as T;
     }
 
 }

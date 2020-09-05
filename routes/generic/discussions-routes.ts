@@ -1,4 +1,4 @@
-import {decodePagination, joiIdRule, ReadQueryValidator} from "../routing-utils";
+import {decodePagination, joiIdRule, readQueryValidator} from "../routing-utils";
 import {discussionController} from "../../model-controllers/generic/discussion-controller";
 import * as joi from '@hapi/joi'
 import {PostTypes} from "../../model/generic-entities/discussion-entity";
@@ -9,18 +9,18 @@ export const discussionRoutes = [
         method: 'GET',
         path: '/api/discussion/{rootEntityId}',
         config: {
-            validate: {
-                params: {
+            validate: joi.object({
+                params: joi.object({
                     rootEntityId: joiIdRule
-                },
-                query: new ReadQueryValidator(100, 'body', 'type', 'touched', 'typeSpecificFields', 'title', '_created', '_lastUpdate', {
-                    pName: 'posted-by',
-                    limit: 1,
+                }).required(),
+                query: readQueryValidator(100, 'body', 'type', 'touched', 'typeSpecificFields', 'title', '_created', '_lastUpdate', {
+                        pName: 'posted-by',
+                        limit: 1,
                         in: false,
-                    projection: ['name', 'pictureUrl', 'gender']
+                        projection: ['name', 'pictureUrl', 'gender']
                     }
-                )
-            },
+                ).required()
+            }).required(),
             description: `read a discussion posts`,
             tags:
                 ['api', 'discussion', 'posts', 'pagination']
@@ -33,7 +33,7 @@ export const discussionRoutes = [
         method: 'GET',
         path: '/api/discussion/communityDiscussionRootId',
         config: {
-            validate: {},
+            validate: joi.object({}).required(),
             description: `return root id for general community discussions`,
             tags:
                 ['api', 'discussion', 'rootid']
@@ -48,7 +48,7 @@ export const discussionRoutes = [
             '/api/discussion',
         config:
             {
-                validate: {
+                validate: joi.object({
                     payload: {
                         rootEntityId: joiIdRule,
                         title: joi.string().max(30),
@@ -56,7 +56,7 @@ export const discussionRoutes = [
                         type: joi.allow(...enum2array(PostTypes)).default('Normal'),
                         extra: joi.object({})
                     }
-                },
+                }).required(),
                 description: `read a discussion posts`,
                 tags:
                     ['api', 'discussion', 'posts', 'pagination']

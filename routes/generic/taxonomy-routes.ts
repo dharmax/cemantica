@@ -7,13 +7,13 @@ export const taxonomy = [
         path: '/taxonomy/lookup/{locale}/{topic}',
         config: {
             validate: {
-                query: {
+                query: joi.object({
                     string: joi.string().allow('').default(''),
-                },
-                params: {
+                }).required(),
+                params: joi.object({
                     locale: joi.string().required(),
                     topic: joi.string().required(),
-                },
+                }).required(),
             },
             description: `perform a lookup of strings in the taxonomy`,
             notes: `the topic is the parent node in the taxonomy`,
