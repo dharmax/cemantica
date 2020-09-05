@@ -1,0 +1,61 @@
+<wall-piece>
+
+    <a href="#piece/{props.data.id}">
+
+        <div class="title">{props.data.title} <span if="{specialState()}">{props.data.status}</span></div>
+        <div class="writer">by {props.data.writer.name}</div>
+        <div class="text">{props.data.sampleText}</div>
+    </a>
+    <select class="status" if="{props.self}" onchange="{changeStatus}" value="{props.data.status}">
+        <option value="draft">Draft</option>
+        <option value="published">Public</option>
+        <option value="limited">Limited</option>
+        <option value="private">Private</option>
+        <option value="hidden">Hidden</option>
+    </select>
+
+    <script>
+
+        import {stateManager} from "../../lib/state-manager";
+        import {Alert} from "../../services/alert-service";
+        import {pieceStore} from "../../viewmodel/piece-store";
+        import {relativeTime} from "short-relative-time";
+
+        /**
+         * props:
+         * data - the piece, with sampleText field
+         */
+        export default {
+            onMounted() {
+                const r = Math.random() * 6 - 3
+                this.root.style.transform = `rotate(${r}deg)`
+                this.$$('.title,.text').forEach(n => {
+                    n.style.direction = this.props.data.language === 'he' ? 'rtl' : 'ltr'
+                })
+
+                const $status = this.$('.status');
+                $status && $status.childNodes.forEach((n) => {
+                    // noinspection JSUnresolvedFunction
+                    n.value === this.props.data.status && n.setAttribute('selected', 'selected')
+                })
+            },
+            openPiece() {
+                stateManager.setState('piece-zoom', this.props.data.id)
+            },
+            relativeTime(date) {
+                return relativeTime(new Date(), new Date(date), true)
+            },
+            async changeStatus(e) {
+                const newStatus = e.target.value
+                await pieceStore.changeStatus(this.props.data.id, newStatus)
+                this.props.data.status = newStatus
+                Alert('status changed', 'info')
+            },
+            specialState() {
+                ['limited', 'private'].includes(this.props.data.status)
+            }
+        }
+    </script>
+
+
+</wall-piece>

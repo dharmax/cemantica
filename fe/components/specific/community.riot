@@ -1,0 +1,84 @@
+<community>
+
+    <div>
+        <h1>Community</h1>
+
+        <section class="users">
+            <div class="search">
+                <zippy title="Search User" ref="{zippy}">
+                    <item-selector callback="{writerSelected}" loader="{searchUser}"
+                                   projection="{['name','gender','country']}"></item-selector>
+                </zippy>
+            </div>
+            <div class="list">
+                <template each="{u in state.users}">
+                    <user u="{u}"/>
+                </template>
+            </div>
+            <pager provider="{loadUsers}"/>
+        </section>
+        <section class="forum">
+            <h1>Community General forum</h1>
+            <section class="discussion">
+                <new-post rolename={"comment"} root={state.communityRootId}/>
+                <discussion config="{discussionConfig}" if={state.communityRootId} root="{state.communityRootId}"/>
+            </section>
+        </section>
+    </div>
+    <script>
+
+        import {userStore} from "../../viewmodel/user-store";
+        import {stateManager} from "../../lib/state-manager";
+        import Pager from '../generic/pager.riot'
+        import ItemSelector from '../generic/item-selector.riot'
+        import User from '../generic/user.riot'
+        import Zippy from '../generic/zippy.riot'
+        import Discussion from '../generic/discussion.riot'
+        import NewPost from '../generic/new-post.riot'
+
+        import {discussionStore} from "../../viewmodel/discussion-store";
+
+        export default {
+            zippy: {},
+            components: {
+                Pager,
+                ItemSelector,
+                User,
+                Zippy,
+                Discussion,
+                NewPost
+            },
+            async onMounted() {
+                const communityRootId = await discussionStore.get('communityDiscussionRootId').then(e => e.id)
+                this.update({communityRootId})
+
+            },
+            discussionConfig: {
+                maxDepth: 5
+            },
+
+            writerSelected(w) {
+                if (!w)
+                    this.zippy.api.close()
+                else
+                    stateManager.setState('writer', w.id)
+            },
+            async loadUsers(from, count) {
+                const result = await userStore.load({
+                    count,
+                    from
+                })
+                this.update({
+                    users: result.items
+                })
+                return result
+            },
+            searchUser(filter) {
+                if (!filter)
+                    return []
+                return userStore.operation('search', {string: filter, projection: ['name', 'gender', 'id']})
+            }
+        }
+
+    </script>
+</community>
