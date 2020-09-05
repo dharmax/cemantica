@@ -63,3 +63,8 @@ export interface ISubscriptionOptions {
     friend?: boolean
     note?: string
 }
+
+export interface IRatable {
+    averageScore: number
+    ratingCount: number
+}

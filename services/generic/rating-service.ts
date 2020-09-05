@@ -2,7 +2,7 @@ import {createPredicate, Predicate, predicatesBetween} from "../../model/model-m
 import {AbstractEntity} from "../../model/generic-entities/abstract-entity";
 import {managedNotificationService} from "./managed-notification-service";
 import {User} from "../../model/generic-entities/user-entity";
-import {IRatable} from "../../lib/common-specific-types";
+import {IRatable} from "../../lib/common-generic-types";
 
 class RatingService {
 

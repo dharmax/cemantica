@@ -1,6 +1,6 @@
 import {storage} from '../../services/generic/storage'
 import {AccessType, IPermissionManaged, PrivilegeViolationException} from '../../services/generic/privilege-service'
-import {IReadOptions, IReadResult} from "../../lib/common-generic-types";
+import {IRatable, IReadOptions, IReadResult} from "../../lib/common-generic-types";
 import {User} from "../../model/generic-entities/user-entity";
 import {getFriends, getUserPhoto} from "../../lib/facebook-api";
 import {confirmPhoneNumberChange, initializePhoneNumberChange} from "../../services/generic/user-notification-service";
@@ -15,7 +15,6 @@ import {userListIsPublic} from "../../config/app-config";
 import {FeedbackService} from "../../services/generic/feedback-service";
 import {AbstractEntity} from "../../model/generic-entities/abstract-entity";
 import {getOntology} from "../../model/model-manager";
-import {IRatable} from "../../lib/common-specific-types";
 import {Notification} from "../../model/generic-entities/notification-entity";
 import {emitMessage} from "../../services/generic/managed-notification-service";
 import Boom = require("boom");

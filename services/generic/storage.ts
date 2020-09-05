@@ -194,6 +194,7 @@ export class Collection {
     async find(query, options: IFindOptions = {}): Promise<Cursor> {
         options.projection && options.projection.push('_id', '_version')
         let cursor = this.collection.find(query)
+        //@ts-ignore
         options.sort && cursor.sort(options.sort)
         options.limit && cursor.batchSize(Math.min(options.batchSize || DEFAULT_BATCH_SIZE, options.limit)).limit(options.limit)
         options.from && cursor.skip(options.from)
@@ -207,6 +208,7 @@ export class Collection {
         options.projection && options.projection.push('_id', '_version')
 
         let cursor = this.collection.find(query)
+        //@ts-ignore
         options.sort && cursor.sort(options.sort)
         options.limit && cursor.batchSize(Math.min(options.batchSize || DEFAULT_BATCH_SIZE, options.limit)).limit(options.limit)
         options.from && cursor.skip(options.from)

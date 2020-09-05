@@ -15,10 +15,8 @@ import {log, LoggedException} from "../../services/generic/logger";
 import {IReadOptions, IReadResult} from "../../lib/common-generic-types";
 import {processTemplate} from "../../lib/template-processor";
 import {ProjectionItem, ProjectionPredicateItem} from "../../routes/routing-utils";
+import {User} from "./user-entity";
 
-declare class User {
-
-}
 
 export abstract class AbstractEntity implements IPermissionManaged {
 

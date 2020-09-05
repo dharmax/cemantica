@@ -7,13 +7,15 @@
       "esnext"
     ],
     "outDir": "dist",
+    "declarationDir": "dist",
+    "declarationMap": true,
+    "declaration": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
     "noImplicitAny": false,
-    "noEmitOnError": false,
-    "declaration": false
+    "noEmitOnError": false
   },
   "exclude": [
     "node_modules",
