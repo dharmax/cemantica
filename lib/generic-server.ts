@@ -29,7 +29,8 @@ export interface IServerConfig {
     queryDictionary: QueryDictionary,
     superuserEmail: string,
     frontEndPath: string,
-    applicationRoutes: ServerRoute[]
+    applicationRoutes: ServerRoute[],
+    rootPath: string
 }
 
 export async function startApplication(conf: IServerConfig) {
@@ -53,7 +54,7 @@ export async function startApplication(conf: IServerConfig) {
     initSemanticLayer(conf.ontology)
     initPrivilegesService(conf.roleDictionary);
     storage.setQueryDictionary(conf.queryDictionary)
-    await startServer([...standardRoutes, conf.applicationRoutes])
+    await startServer([...standardRoutes, ...conf.applicationRoutes])
 
     async function startServer(routes) {
         const server = new Server({
