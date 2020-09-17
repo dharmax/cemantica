@@ -1,7 +1,7 @@
 import * as joi from '@hapi/joi'
 import * as boom from 'boom'
 
-import * as SessionService from '../../services/session-service'
+import * as SessionService from '../services/session-service'
 
 export const sessionRoutes = [
     {

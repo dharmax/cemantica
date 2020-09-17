@@ -2,7 +2,10 @@ import * as joi from "@hapi/joi"
 import {storage} from "./services";
 import {RunMode, runMode} from "./config";
 import {Countries} from "./lib";
-import {adminRoutes, jobManagerRoutes, sessionRoutes, userRoutes} from "./routes/generic";
+import {sessionRoutes} from "./routes/session-routes";
+import {userRoutes} from "./routes/users-routes";
+import {adminRoutes} from "./routes/admin-routes";
+import {jobManagerRoutes} from "./routes/job-manager-routes";
 
 // import { taxonomy } from "./routes/taxonomy-routes";
 

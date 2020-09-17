@@ -1,6 +1,6 @@
-import {joiCronStringRule} from "../routing-utils";
+import {joiCronStringRule} from "./routing-utils";
 import * as joi from '@hapi/joi'
-import {jobManagerController} from "../../model-controllers/job-manager-controller";
+import {jobManagerController} from "../model-controllers/job-manager-controller";
 import * as Boom from "boom";
 
 export const jobManagerRoutes = [

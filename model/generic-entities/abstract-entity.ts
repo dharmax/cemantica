@@ -23,7 +23,7 @@ import {
 } from "../model-manager";
 import {all, map, props} from 'bluebird'
 import {IReadOptions, IReadResult, ISubscriptionOptions, processTemplate} from "../../lib";
-import {ProjectionItem, ProjectionPredicateItem} from "../../routes";
+import {ProjectionItem, ProjectionPredicateItem} from "../../routes/routing-utils";
 import * as joi from "@hapi/joi";
 import {Notification} from "./notification-entity";
 
