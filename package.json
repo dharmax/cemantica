@@ -65,7 +65,6 @@
     "@types/nodemailer": "^6.2.2",
     "@types/request": "^2.48.3",
     "@types/request-promise-native": "^1.0.17",
-    "@types/sanitize-html": "^1.20.2",
     "@types/semver": "^6.2.0",
     "@types/semver-compare": "latest",
     "@types/should": "^13.0.0",

@@ -9,8 +9,6 @@
     ],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "outDir": "dist",
-    "declarationDir": "dist",
     "declarationMap": true,
     "declaration": true,
     "moduleResolution": "node",
