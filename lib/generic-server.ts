@@ -4,18 +4,19 @@ import * as inert from '@hapi/inert'
 
 
 import {standardRoutes} from '../api-routes';
-import {journal, log} from "../services/generic/logger"
-import {initPrivilegesService, RoleDictionary} from "../services/generic/privilege-service";
+import {journal, log} from "../services/logger"
+import {initPrivilegesService, RoleDictionary} from "../services/privilege-service";
 import {addAuthorizationStrategies, addHapiExtensions} from "./hapi-extentions";
 import {webServerPort} from "../config/server-address";
 import {initSemanticLayer} from "../model/model-manager";
-import {startupService} from "../services/generic/startup-service";
+import {startupService} from "../services/startup-service";
 import {IRawOntology} from "../model/raw-ontology";
-import {initBroadcastService} from "../services/generic/managed-notification-service";
-import {QueryDictionary, storage} from "../services/generic/storage";
+import {initBroadcastService} from "../services/managed-notification-service";
+import {QueryDictionary, storage} from "../services/storage";
 import {configTemplateEngine} from "./ssr-template-init";
 
 import {render} from "@riotjs/ssr";
+import {AppConfig} from "../config";
 
 
 require('@riotjs/ssr/register')()
@@ -33,8 +34,10 @@ export interface IServerConfig {
     rootPath: string
 }
 
-export async function startApplication(conf: IServerConfig) {
+export async function startApplication(appName: string, conf: IServerConfig) {
 
+    AppConfig.applicationName = appName
+    AppConfig.rootPath = conf.rootPath
 ////////////////////////////////////////////////////////////////////
 
     process.on('unhandledRejection', (reason, p) => {

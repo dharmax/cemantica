@@ -1,8 +1,8 @@
-import {rootPath} from "../../root-path";
 import {createReadStream, readdirSync} from "fs";
 import {join} from "path";
 import {createInterface} from "readline";
 import {all} from 'bluebird'
+import {AppConfig} from "../config";
 
 const MAX_RESULTS = 20;
 
@@ -51,12 +51,13 @@ async function loadTaxomomies() {
 
     let locales = ['he']
 
+    // noinspection ES6MissingAwait
     locales.forEach(async locale => {
         Taxonomies[locale] = await loadTaxonomy(locale)
     })
 
     async function loadTaxonomy(locale) {
-        let basePath = `${rootPath}/taxonomy/${locale}`
+        let basePath = `${AppConfig.rootPath}/taxonomy/${locale}`
 
         let dirList = readdirSync(basePath).filter(fn => fn.endsWith('.tax.txt'))
 

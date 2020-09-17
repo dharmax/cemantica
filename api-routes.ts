@@ -1,11 +1,8 @@
 import * as joi from "@hapi/joi"
-import {storage} from "./services/generic/storage";
-import {RunMode, runMode} from "./config/run-mode";
-import {Countries} from "./lib/world-counties-data";
-import {sessionRoutes} from "./routes/generic/session-routes";
-import {adminRoutes} from "./routes/generic/admin-routes";
-import {jobManagerRoutes} from "./routes/generic/job-manager-routes";
-import {userRoutes} from "./routes/generic/users-routes";
+import {storage} from "./services";
+import {RunMode, runMode} from "./config";
+import {Countries} from "./lib";
+import {adminRoutes, jobManagerRoutes, sessionRoutes, userRoutes} from "./routes/generic";
 
 // import { taxonomy } from "./routes/taxonomy-routes";
 
@@ -14,11 +11,6 @@ export const standardRoutes = [
     ...userRoutes,
     ...adminRoutes,
     ...jobManagerRoutes,
-    // //
-    // ...whisperationRoutes,
-    // ...piecesRoutes,
-    // ...feedRoutes,
-    // ...discussionRoutes,
     ...systemRoutes(),
 ]
 

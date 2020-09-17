@@ -1,5 +1,4 @@
-import {User} from "../../model/generic-entities/user-entity";
-import {rootPath} from "../../root-path";
+import {User} from "../model/generic-entities";
 
 import {lstatSync, readdirSync, readFileSync} from "fs";
 import {all, promisify} from "bluebird";
@@ -9,10 +8,9 @@ import {fromString} from 'html-to-text'
 import * as nodeMailer from 'nodemailer'
 import {log, LoggedException} from "./logger";
 import * as Nexmo from 'nexmo'
-import {applicationName} from "../../config/deployment";
+import {AppConfig} from "../config";
 import {Readable} from "stream";
 import {Url} from "url";
-import {dontSendMail, extraMessageTemplatesRoot} from "../../config/app-config";
 import juice = require("juice");
 
 // noinspection JSUnusedGlobalSymbols
@@ -165,14 +163,14 @@ const nexmo = new Nexmo({
 const nexmoSendSms: (...args) => Promise<any> = promisify(nexmo.message.sendSms)
 
 function sendTheSms(phoneNumber: string, text: string): Promise<any> {
-    return nexmoSendSms(applicationName, phoneNumber, text, {type: 'unicode'})
+    return nexmoSendSms(AppConfig.applicationName, phoneNumber, text, {type: 'unicode'})
 
 }
 
 function getDefaultSubject(language) {
     let s = {
         he: 'הודעת מערכת',
-        en: applicationName + ' Notification'
+        en: AppConfig.applicationName + ' Notification'
     }
     return s[language] || s['en']
 }
@@ -197,7 +195,7 @@ export interface MailAttachment {
 
 export async function sendTheMail(userEmail: string | string[], subject: string, html: string, text: string, attachments?: MailAttachment[]): Promise<any> {
 
-    if (!dontSendMail)
+    if (!AppConfig.dontSendMail)
         return transporter.sendMail({
             from: TransportConfig.auth.user,
             to: userEmail,
@@ -264,8 +262,8 @@ let templateDictionary: { [x: string]: MessageTemplate } = null
 
 export function getTemplate(name): MessageTemplate {
     if (!templateDictionary) {
-        initTemplates(join(rootPath, '..', 'message-templates'))
-        extraMessageTemplatesRoot && initTemplates(extraMessageTemplatesRoot)
+        initTemplates(join(AppConfig.rootPath, '..', 'message-templates'))
+        AppConfig.extraMessageTemplatesRoot && initTemplates(AppConfig.extraMessageTemplatesRoot)
     }
 
     return templateDictionary[name]

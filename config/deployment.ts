@@ -1,13 +1,9 @@
 import {getDockerHostIp} from "./docker-support";
 import {RunMode, runMode} from "./run-mode";
-
-export const applicationName = 'whisperation'
-export const apiVersion = '1.0.0'
-
-export const debugTimeOffset = 0
+import {AppConfig} from "./app-config";
 
 // logging related
-export const loggingFolder = `${(process.env.LOG_FOLDER || '/opt/logs')}/${applicationName}/${RunMode[runMode].toString()}/`
+export const loggingFolder = `${(process.env.LOG_FOLDER || '/opt/logs')}/${AppConfig.applicationName}/${RunMode[runMode].toString()}/`
 export const journalCollectionMaxSize = 1000000
 export const MAX_JOURNAL_QUERY_RESULTS = 250
 
@@ -32,7 +28,7 @@ export async function getDatabaseUrl() {
 
 export function getDatabaseName() {
     const auto = process.env.DB_NAME == 'auto'
-    return auto ? `${applicationName}-${RunMode[runMode].toString()}`
+    return auto ? `${AppConfig.applicationName}-${RunMode[runMode].toString()}`
         : process.env.DB_NAME || ''
 }
 

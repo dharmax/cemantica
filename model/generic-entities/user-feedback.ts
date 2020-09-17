@@ -1,7 +1,6 @@
-import {AbstractEntity} from "./abstract-entity";
+import {AbstractEntity, User} from "./abstract-entity";
 import {string} from "@hapi/joi";
-import {User} from "./user-entity";
-import {ISession} from "../../services/generic/session-service";
+import {ISession} from "../../services/session-service";
 import {createPredicate} from "../model-manager";
 
 export class UserFeedback extends AbstractEntity {

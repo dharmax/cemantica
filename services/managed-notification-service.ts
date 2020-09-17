@@ -1,10 +1,9 @@
-import {User} from "../../model/generic-entities/user-entity";
-import {AbstractEntity} from "../../model/generic-entities/abstract-entity";
-import {Notification} from "../../model/generic-entities/notification-entity";
+import {AbstractEntity, User} from "../model/generic-entities/abstract-entity";
+import {Notification} from "../model/generic-entities/notification-entity";
 import {getSessionByToken, getSessionByUser, ISession} from "./session-service";
 import {Server as HapiServer} from "@hapi/hapi";
 import * as SocketIO from "socket.io";
-import {Mutex} from "../../lib/mutex";
+import {Mutex} from "../lib/mutex";
 import {log} from "./logger";
 
 class ManagedNotificationService {

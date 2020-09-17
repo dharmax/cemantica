@@ -1,22 +1,32 @@
-import {storage} from '../../services/generic/storage'
-import {AccessType, IPermissionManaged, PrivilegeViolationException} from '../../services/generic/privilege-service'
-import {IRatable, IReadOptions, IReadResult} from "../../lib/common-generic-types";
-import {User} from "../../model/generic-entities/user-entity";
-import {getFriends, getUserPhoto} from "../../lib/facebook-api";
-import {confirmPhoneNumberChange, initializePhoneNumberChange} from "../../services/generic/user-notification-service";
+import {
+    AccessType,
+    addClientLogReport,
+    confirmPhoneNumberChange,
+    emitMessage,
+    initializePhoneNumberChange,
+    IPermissionManaged,
+    journal,
+    LoggedException,
+    PrivilegeViolationException,
+    storage
+} from '../services'
+import {
+    checkPermission,
+    getFriends,
+    getUserPhoto,
+    IRatable,
+    IReadOptions,
+    IReadResult,
+    softCheckPermission
+} from "../lib";
 
-import * as resetPasswordService from '../../services/generic/reset-password-service'
-import {addClientLogReport, journal, LoggedException} from "../../services/generic/logger";
-import {PermissionGroup} from "../../model/generic-entities/permission-group";
-import {ISession} from "../../services/generic/session-service";
-import {checkPermission, softCheckPermission} from "./controllers-utils";
-import {ratingService} from "../../services/generic/rating-service";
-import {userListIsPublic} from "../../config/app-config";
-import {FeedbackService} from "../../services/generic/feedback-service";
-import {AbstractEntity} from "../../model/generic-entities/abstract-entity";
-import {getOntology} from "../../model/model-manager";
-import {Notification} from "../../model/generic-entities/notification-entity";
-import {emitMessage} from "../../services/generic/managed-notification-service";
+import * as resetPasswordService from '../services/reset-password-service'
+import {AbstractEntity, Notification, PermissionGroup, User} from "../model/generic-entities";
+import {AppConfig} from "../config";
+import {getOntology} from "../model";
+import {ISession} from "../services/session-service";
+import {ratingService} from "../services/rating-service";
+import {FeedbackService} from "../services/feedback-service";
 import Boom = require("boom");
 
 
@@ -29,7 +39,7 @@ export const userController = {
      */
     async getAllUsers(session, opt: IReadOptions): Promise<IReadResult> {
 
-        if (!userListIsPublic)
+        if (!AppConfig.userListIsPublic)
             await checkPermission(session, await PermissionGroup.getAdminsGroup(), AccessType.ShallowRead)
         const adminLevel = await softCheckPermission(session, await PermissionGroup.getAdminsGroup(), AccessType.Manage)
         opt.projection = ['name', 'joined', 'pictureUrl', 'gender', 'country', 'lastActive']
@@ -46,7 +56,7 @@ export const userController = {
 
     async searchUsers(session, string: string, projection: string[]): Promise<Object> {
 
-        if (!userListIsPublic && session !== 'tester' && (!session.userId))
+        if (!AppConfig.userListIsPublic && session !== 'tester' && (!session.userId))
             throw new PrivilegeViolationException(null, "user-list", AccessType.ShallowRead)
 
         let col = await storage.collectionForEntityType(User)

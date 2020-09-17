@@ -1,17 +1,17 @@
 /**
  * This "hack" forces Typescript and node to "know" the User function/class, otherwise it can be optimized to nill.
  */
-import {ISession} from "../../services/generic/session-service";
+import {ISession} from "../services/session-service";
 import {
     AccessType,
-    checkPermission as _checkPermission,
+    checkPermissionInternal as _checkPermission,
     IPermissionManaged,
     isSuperUser,
     PrivilegeOwner
-} from "../../services/generic/privilege-service";
-import {journal, LoggedException} from "../../services/generic/logger";
-import {User as _User} from "../../model/generic-entities/user-entity";
-import {RunMode, runMode} from "../../config/run-mode";
+} from "../services/privilege-service";
+import {journal, LoggedException} from "../services/logger";
+import {RunMode, runMode} from "../config/run-mode";
+import {User as _User} from "../model/generic-entities";
 
 const User = _User
 

@@ -8,9 +8,9 @@ import {
     readQueryValidatorPlain
 } from "../routing-utils";
 import * as joi from '@hapi/joi'
-import {userController} from "../../model-controllers/generic/user-controller";
+import {userController} from "../../model-controllers/user-controller";
 import * as Boom from "boom";
-import {RESET_PASSWORD_API_PATH} from "../../services/generic/reset-password-service";
+import {RESET_PASSWORD_API_PATH} from "../../services/reset-password-service";
 
 /**
  * First, we have the generic user related APIs and after that, application specific user related APIs

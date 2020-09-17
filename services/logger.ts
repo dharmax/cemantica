@@ -1,15 +1,14 @@
 import * as bunyan from "bunyan";
-import {AbstractEntity} from "../../model/generic-entities/abstract-entity";
+import {AbstractEntity, User} from "../model/generic-entities/abstract-entity";
 import {all} from 'bluebird'
 import * as mongo from 'mongodb'
 
-import {MongoStream} from "../../lib/mongo-stream";
+import {MongoStream} from "../lib/mongo-stream";
 import {storageEventEmitter} from "./storage-event-emitter";
 import {existsSync, mkdirSync} from "fs";
 import {ISession} from "./session-service";
-import {journalCollectionMaxSize, loggingFolder, MAX_JOURNAL_QUERY_RESULTS} from "../../config/deployment";
-import {IClientLogQuery, IClientLogQueryResultEntry} from "../../lib/common-generic-types";
-import {User} from "../../model/generic-entities/user-entity";
+import {journalCollectionMaxSize, loggingFolder, MAX_JOURNAL_QUERY_RESULTS} from "../config/deployment";
+import {IClientLogQuery, IClientLogQueryResultEntry} from "../lib/common-generic-types";
 
 
 if (!existsSync(loggingFolder))

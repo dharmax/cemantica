@@ -1,5 +1,5 @@
 import * as joi from "@hapi/joi"
-import {adminController} from "../../model-controllers/generic/admin-controller";
+import {adminController} from "../../model-controllers/admin-controller";
 import {decodePagination, joiIdRule, readQueryValidator} from "../routing-utils";
 
 export const adminRoutes = [

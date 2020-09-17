@@ -1,13 +1,13 @@
-import {ISession} from "../../services/generic/session-service";
-import {IReadOptions, IReadResult} from "../../lib/common-generic-types";
-import {loadEntityById} from "../../model/model-manager";
-import {AbstractEntity} from "../../model/generic-entities/abstract-entity";
-import {checkPermission} from "./controllers-utils";
-import {AccessType} from "../../services/generic/privilege-service";
-import {Discussion} from "../../model/generic-entities/discussion-entity";
-import {journal} from "../../services/generic/logger";
-import {managedNotificationService} from "../../services/generic/managed-notification-service";
-import {ConfigurationEntity} from "../../model/generic-entities/configuration-entity";
+import {ISession} from "../services/session-service";
+import {IReadOptions, IReadResult} from "../lib/common-generic-types";
+import {loadEntityById} from "../model/model-manager";
+import {AbstractEntity} from "../model/generic-entities/abstract-entity";
+import {checkPermission} from "../lib/controllers-utils";
+import {AccessType} from "../services/privilege-service";
+import {Discussion} from "../model/generic-entities/discussion-entity";
+import {journal} from "../services/logger";
+import {managedNotificationService} from "../services/managed-notification-service";
+import {ConfigurationEntity} from "../model/generic-entities/configuration-entity";
 
 export const discussionController = {
 

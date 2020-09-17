@@ -1,4 +1,4 @@
-import {lookup} from "../../services/generic/taxonomy-service";
+import {lookup} from "../services/taxonomy-service";
 
 export const taxonomyController = {
 

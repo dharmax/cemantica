@@ -1,5 +1,4 @@
-import {User} from "./user-entity";
-import {AbstractEntity} from "./abstract-entity";
+import {AbstractEntity, User} from "./abstract-entity";
 import {createPredicate, predicatesBetween} from "../model-manager";
 
 export interface IFlaggableMix<T extends AbstractEntity> {

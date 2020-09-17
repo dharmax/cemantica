@@ -1,7 +1,7 @@
-import {PermissionGroup} from "../../model/generic-entities/permission-group";
-import {createPredicate, deletePredicate, findPredicates, getOntology, Predicate} from "../../model/model-manager";
+import {PermissionGroup} from "../model/generic-entities/permission-group";
+import {createPredicate, deletePredicate, findPredicates, getOntology, Predicate} from "../model/model-manager";
 import {log, LoggedException} from "./logger";
-import {AbstractEntity} from "../../model/generic-entities/abstract-entity";
+import {AbstractEntity} from "../model/generic-entities/abstract-entity";
 
 export enum AccessType {
     Vote,
@@ -235,7 +235,7 @@ export function isSuperUser(userId): boolean {
  * @returns void. It throws an exception instead
  * @throws PrivilegeViolationException
  */
-export async function checkPermission(actor: PrivilegeOwner, entity: IPermissionManaged, accessType: AccessType, forceDefault = false): Promise<boolean> {
+export async function checkPermissionInternal(actor: PrivilegeOwner, entity: IPermissionManaged, accessType: AccessType, forceDefault = false): Promise<boolean> {
 
     if (actor.id === permanentSuperUserId)
         return true

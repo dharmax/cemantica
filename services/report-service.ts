@@ -1,9 +1,9 @@
-import {IReportRequestConf} from "../../routes/routing-utils";
+import {IReportRequestConf} from "../routes/routing-utils";
 
 import {Transform} from 'json2csv'
 import {getTemplate, sendEmail} from "./user-notification-service";
 import {Readable} from "stream";
-import {stream2string} from "../../lib/stream2string";
+import {stream2string} from "../lib/stream2string";
 
 
 /**

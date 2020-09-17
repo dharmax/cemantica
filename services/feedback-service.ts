@@ -1,6 +1,6 @@
 import {sendTheMail} from "./user-notification-service";
 import {ISession} from "./session-service";
-import {UserFeedback} from "../../model/generic-entities/user-feedback";
+import {UserFeedback} from "../model/generic-entities/user-feedback";
 
 
 export const FeedbackService = {

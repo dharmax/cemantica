@@ -1,5 +1,5 @@
 import {decodePagination, joiIdRule, readQueryValidator} from "../routing-utils";
-import {discussionController} from "../../model-controllers/generic/discussion-controller";
+import {discussionController} from "../../model-controllers/discussion-controller";
 import * as joi from '@hapi/joi'
 import {PostTypes} from "../../model/generic-entities/discussion-entity";
 import {enum2array} from "../../lib/arrays";

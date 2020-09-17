@@ -1,11 +1,11 @@
 import {PermissionGroup} from "./generic-entities/permission-group";
-import {User} from "./generic-entities/user-entity";
 import {Notification} from "./generic-entities/notification-entity";
 import {IRawOntology} from "./raw-ontology";
 import {PredicateDcr} from "./predicate-descriptor";
 import {Discussion} from "./generic-entities/discussion-entity";
 import {ConfigurationEntity} from "./generic-entities/configuration-entity";
 import {UserFeedback} from "./generic-entities/user-feedback";
+import {User} from "./generic-entities";
 
 export const standardOntology: IRawOntology = {
     entityDcrs: [PermissionGroup, User, Notification, Discussion, ConfigurationEntity, UserFeedback],

@@ -1,17 +1,17 @@
-import {getSessionByToken, handleSSOLogin, ISession} from "../services/generic/session-service";
-import {log} from "../services/generic/logger";
+import {getSessionByToken, handleSSOLogin, ISession} from "../services/session-service";
+import {log} from "../services/logger";
 import * as boom from "boom";
 import {
-    apiVersion,
+    AppConfig,
     facebookClientId,
     facebookClientSecret,
+    getWebServerUrl,
     googleClientId,
     googleClientSecret,
-} from "../config/deployment";
+    isUsingHttps,
+} from "../config";
 import * as Bell from '@hapi/bell'
-import {PrivilegeViolationException} from "../services/generic/privilege-service";
-import {getWebServerUrl, isUsingHttps} from "../config/server-address";
-import {storage} from "../services/generic/storage";
+import {PrivilegeViolationException, storage} from "../services";
 import {Request, Server} from '@hapi/hapi'
 
 
@@ -26,7 +26,7 @@ function createGuestSession(request: Request & { session: Partial<ISession> }): 
     return {
         ip,
         sessionId: ip,
-        apiVersion: apiVersion,
+        apiVersion: AppConfig.apiVersion,
         getUser: async () => null
     }
 }

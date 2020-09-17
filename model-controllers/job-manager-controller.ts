@@ -1,9 +1,9 @@
-import {jobManagerService, JobOperation, jobPrototypeManager} from "../../services/generic/job-manager-service";
-import {ISession} from "../../services/generic/session-service";
-import {AccessType} from "../../services/generic/privilege-service";
-import {PermissionGroup} from "../../model/generic-entities/permission-group";
-import {journal} from "../../services/generic/logger";
-import {checkPermission} from "./controllers-utils";
+import {jobManagerService, JobOperation, jobPrototypeManager} from "../services/job-manager-service";
+import {ISession} from "../services/session-service";
+import {AccessType} from "../services/privilege-service";
+import {PermissionGroup} from "../model/generic-entities/permission-group";
+import {journal} from "../services/logger";
+import {checkPermission} from "../lib/controllers-utils";
 
 /**
  * TODO permissions are now checked globally and do not use the JobOperation permission system support

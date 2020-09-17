@@ -1,9 +1,8 @@
 import {get as httpsGet} from 'https'
-import {all} from 'bluebird'
-import {User} from "../model/generic-entities/user-entity"
 import {buildUrl} from "./build-url"
 import {facebookClientId} from "../config/deployment";
-import {LoggedException} from "../services/generic/logger";
+import {LoggedException} from "../services/logger";
+import {User} from "../model/generic-entities";
 
 const defaultFacebookApiVersion = '3.2'
 

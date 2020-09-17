@@ -1,13 +1,12 @@
-import {ISession} from "../../services/generic/session-service";
-import {PermissionGroup} from "../../model/generic-entities/permission-group";
-import {AccessType} from "../../services/generic/privilege-service";
-import {journal, queryClientLog, queryJournal} from "../../services/generic/logger";
-import {IClientLogQuery, IReadOptions} from "../../lib/common-generic-types";
-import {getOntology, idAndType2entity} from "../../model/model-manager";
-import {storage} from "../../services/generic/storage";
-import {AbstractEntity} from "../../model/generic-entities/abstract-entity";
-import {checkPermission} from "./controllers-utils";
-import {User} from "../../model/generic-entities/user-entity";
+import {ISession} from "../services/session-service";
+import {PermissionGroup} from "../model/generic-entities/permission-group";
+import {AccessType} from "../services/privilege-service";
+import {journal, queryClientLog, queryJournal} from "../services/logger";
+import {IClientLogQuery, IReadOptions} from "../lib/common-generic-types";
+import {getOntology, idAndType2entity} from "../model/model-manager";
+import {storage} from "../services/storage";
+import {AbstractEntity, User} from "../model/generic-entities/abstract-entity";
+import {checkPermission} from "../lib/controllers-utils";
 import Boom = require("boom");
 
 

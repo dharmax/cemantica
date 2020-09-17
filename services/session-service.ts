@@ -1,19 +1,13 @@
 import {storage, StorageSession} from './storage'
-import {userController} from "../../model-controllers/generic/user-controller";
+import {userController} from "../model-controllers/user-controller";
 import {journal, log, LoggedException} from "./logger";
-import {User} from "../../model/generic-entities/user-entity";
+import {PermissionGroup, User} from "../model/generic-entities";
 import {getTemplate, notifyUser, sendEmail, sendSms} from "./user-notification-service";
 import {deleteSessionByToken, findSessionByToken, refreshSession, storeSession} from "./session-storage";
-import {apiVersion, forceAuthentication} from "../../config/deployment";
-import {SSOProviderName} from "../../lib/common-generic-types";
-import {verifyFacebookAuthData} from "../../lib/facebook-api";
+import {AppConfig, forceAuthentication, runMode, RunMode} from "../config";
+import {checkPermissionForUserId, SSOProviderName, stringHash, verifyFacebookAuthData} from "../lib";
 import * as Boom from 'boom'
-import {RunMode, runMode} from "../../config/run-mode";
-import {stringHash} from "../../lib/utils";
-import {dontConfirmEmail, sendLoginNotifications, useSms} from "../../config/app-config";
 import {Socket} from "socket.io";
-import {checkPermissionForUserId} from "../../model-controllers/generic/controllers-utils";
-import {PermissionGroup} from "../../model/generic-entities/permission-group";
 import {AccessType} from "./privilege-service";
 
 
@@ -38,9 +32,9 @@ export async function startSignup(userInfo): Promise<string> {
         userInfo
     }
 
-    if (!dontConfirmEmail)
+    if (!AppConfig.dontConfirmEmail)
         sendEmailSignupCode(userInfo.email, entry.emailCode, userInfo.preferences.language)
-    if (useSms)
+    if (AppConfig.useSms)
         sendSmsSignupCode(userInfo.phone, entry.smsCode, userInfo.language, userInfo.country)
 
     await saveSignupEntry(entry)
@@ -62,7 +56,7 @@ export async function finalizeSignup(registrationtoken, signupCodes, force = fal
     log.info(`finalizing signup process for ${entry.name}`)
 
     if (!isTestUser(entry.userInfo)) {
-        if (force && useSms) {
+        if (force && AppConfig.useSms) {
             if (entry.smsCode !== signupCodes.smsCode)
                 throw "Bad phone code"
         }
@@ -122,7 +116,7 @@ export async function loginUser(sessionDummy: any, loginInfo: { email: string, p
     user.update({lastActive: new Date()})
     journal(user.id, 'login', null, await user.getField('name'))
     // noinspection ES6MissingAwait
-    sendLoginNotifications && notifyUser(user, getTemplate('LoginNotification'), {date: new Date()})
+    AppConfig.sendLoginNotifications && notifyUser(user, getTemplate('LoginNotification'), {date: new Date()})
     return getSessionByToken(session.token)
 }
 
@@ -203,7 +197,7 @@ export async function getSessionByToken(token: string) {
     // populate the properties that isn't required to be kept in a database
     // noinspection ES6MissingAwait
     Object.assign(s, {
-        apiVersion: apiVersion,
+        apiVersion: AppConfig.apiVersion,
         sessionId: '' + stringHash(s.userId),
         getUser: async () => s.userId && User.createFromDB(User, s.userId.toString())
     })

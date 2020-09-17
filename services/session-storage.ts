@@ -3,7 +3,7 @@ import {storage} from "./storage";
 
 
 import * as NodeCache from "node-cache";
-import {sessionTTLSeconds} from "../../config/app-config";
+import {AppConfig} from "../config";
 
 const cache = new NodeCache({stdTTL: 360})
 
@@ -12,7 +12,7 @@ const cache = new NodeCache({stdTTL: 360})
      * This are house keeping operations related to sessions
      */
 
-    setInterval(cleanObsoleteSessions, sessionTTLSeconds * 1000)
+    setInterval(cleanObsoleteSessions, AppConfig.sessionTTLSeconds * 1000)
     setInterval(updateActiveUsersLastActiveField, 1000 * 60 * 30)
     setTimeout(updateActiveUsersLastActiveField, 5000)
 }
@@ -71,7 +71,7 @@ async function cleanObsoleteSessions() {
 
     const col = await getSessionCollection()
 
-    const threshold = Date.now() - sessionTTLSeconds * 1000
+    const threshold = Date.now() - AppConfig.sessionTTLSeconds * 1000
 
     // delete the inactive sessions
     const result = await col.deleteByQuery({

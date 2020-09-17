@@ -1,10 +1,10 @@
-import {PredicateCollection, SEPARATOR, storage} from "../services/generic/storage"
+import {PredicateCollection, SEPARATOR, storage} from "../services/storage"
 import {AbstractEntity} from "./generic-entities/abstract-entity";
 import {IReadOptions, IReadResult} from "../lib/common-generic-types";
 import {standardOntology} from "./standard-ontology";
 import {IRawOntology} from "./raw-ontology";
 import {PredicateDcr} from "./predicate-descriptor";
-import {LoggedException} from "../services/generic/logger";
+import {LoggedException} from "../services/logger";
 
 let ontology: Ontology
 
@@ -136,7 +136,7 @@ export async function deleteAllEntityPredicates(entityId: string) {
 /**
  * note that it is possible to specify peerType with empty array as the projection. It can be useful to filter the predicates by the peer type that way!
  */
-export interface IFindOptions {
+export interface ISearchOptions {
     peerId?: string,
     peerType?: string | string[],
     projection?: string[],
@@ -147,10 +147,10 @@ export interface IFindOptions {
  * @param {boolean} incoming specify false for outgoing predicates
  * @param {string} predicateName the name of the predicate
  * @param {string} entityId the entity id - it would be the source for outgoing predicates and the target for incoming
- * @param {IFindOptions} opts
+ * @param {ISearchOptions} opts
  * @returns {Promise<Object[]}
  */
-export async function findPredicates(incoming: boolean, predicateName: string, entityId: string, opts: IFindOptions = {}): Promise<Predicate[]> {
+export async function findPredicates(incoming: boolean, predicateName: string, entityId: string, opts: ISearchOptions = {}): Promise<Predicate[]> {
     // noinspection ES6MissingAwait
     return <Promise<Predicate[]>>loadPredicates(incoming, predicateName, entityId, opts, null)
 }
@@ -161,17 +161,17 @@ export async function findPredicates(incoming: boolean, predicateName: string, e
  * @param {boolean} incomming specify false for outgoing predicates
  * @param {string} predicateName the name of the predicate
  * @param {string} entityId the entity id - it would be the source for outgoing predicates and the target for incoming
- * @param {IFindOptions} opts
+ * @param {ISearchOptions} opts
  * @param {IReadOptions} pagination parameters. Null will return an array instead of IReadResult
  * @returns {Promise<Object[] | IReadResult>}
  */
-export async function pagePredicates(incomming: boolean, predicateName: string, entityId: string, opts: IFindOptions = {}, pagination: IReadOptions): Promise<IReadResult> {
+export async function pagePredicates(incomming: boolean, predicateName: string, entityId: string, opts: ISearchOptions = {}, pagination: IReadOptions): Promise<IReadResult> {
     // noinspection ES6MissingAwait
     return <Promise<IReadResult>>loadPredicates(incomming, predicateName, entityId, opts, pagination)
 }
 
 
-async function loadPredicates(incoming: boolean, predicateName: string, entityId: string, opts: IFindOptions = {}, pagination: IReadOptions): Promise<Predicate[] | IReadResult | AbstractEntity[]> {
+async function loadPredicates(incoming: boolean, predicateName: string, entityId: string, opts: ISearchOptions = {}, pagination: IReadOptions): Promise<Predicate[] | IReadResult | AbstractEntity[]> {
 
     const pcol: PredicateCollection = await pcollection()
 

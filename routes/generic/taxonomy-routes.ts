@@ -1,5 +1,5 @@
 import * as joi from '@hapi/joi'
-import {taxonomyController} from "../../model-controllers/generic/taxonomy-controller";
+import {taxonomyController} from "../../model-controllers/taxonomy-controller";
 
 export const taxonomy = [
     {

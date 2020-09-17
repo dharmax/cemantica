@@ -1,7 +1,7 @@
 import {collectValues, refNodes, refs} from "./utils";
 
 
-export function refsPlugin(component) {
+export function refsPlugin(component): void {
 
     component.refs = (from?: Element | string): HTMLInputElement[] => {
         from = from || component.root

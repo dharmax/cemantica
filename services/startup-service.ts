@@ -1,10 +1,10 @@
-import {PermissionGroup} from "../../model/generic-entities/permission-group";
-import {userController} from "../../model-controllers/generic/user-controller";
+import {PermissionGroup} from "../model/generic-entities/permission-group";
+import {userController} from "../model-controllers/user-controller";
 import {hash} from "bcryptjs";
-import {INITIAL_SUPERUSER_EMAIL, INITIAL_SUPERUSER_PW} from "../../config/deployment";
+import {INITIAL_SUPERUSER_EMAIL, INITIAL_SUPERUSER_PW} from "../config/deployment";
 import {log} from "./logger";
-import {User} from "../../model/generic-entities/user-entity";
 import {setSuperUserId} from "./privilege-service";
+import {User} from "../model/generic-entities";
 
 /**
  * This little service simply populate whatever need to be populated in a clean installation
