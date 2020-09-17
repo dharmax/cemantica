@@ -1,7 +1,7 @@
 // @ts-ignore
 import * as riot from 'riot'
 // @ts-ignore
-import AppAdmin from './components/generic/admin-components/app-admin.riot'
+import AppAdmin from './components/admin-components/app-admin.riot'
 import {refsPlugin} from "./lib/riot-ext";
 // @ts-ignore
 import Styles from './styling/styles.less'

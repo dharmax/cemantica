@@ -35,15 +35,15 @@
 
     <script>
         import ModelBrowser from './model-browser.riot'
-        import LoginBox from '../login-box.riot'
-        import Toasters from '../toasters.riot'
+        import LoginBox from '../generic/login-box.riot'
+        import Toasters from '../generic/toasters.riot'
         import AdminPage from './admin-page.riot'
         import JobsPage from './jobs-page.riot'
-        import dispatcher from '../../../lib/dispatcher'
-        import {getSession, logout} from "../../../services/session-manager";
+        import dispatcher from '../../lib/dispatcher'
+        import {getSession, logout} from "../../services/session-manager";
         import JournalPage from './journal-page.riot'
-        import {stateManager} from "../../../lib/state-manager";
-        import MenuManager from '../menu-manager.riot'
+        import {stateManager} from "../../lib/state-manager";
+        import MenuManager from '../generic/menu-manager.riot'
 
         export default {
             components: {
