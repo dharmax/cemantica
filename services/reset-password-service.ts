@@ -2,7 +2,7 @@ import {storage} from "./storage";
 import {getTemplate, notifyUser} from "./user-notification-service";
 import {getWebServerUrlNoPort} from "../config/server-address";
 import {LoggedException} from "./logger";
-import {User} from "../model/generic-entities";
+import {User} from "../model/index";
 
 export const RESET_PASSWORD_API_PATH = '/api/user/confirmResetPassword/';
 

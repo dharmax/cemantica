@@ -1,5 +1,5 @@
 import {createPredicate, Predicate, predicatesBetween} from "../model/model-manager";
-import {AbstractEntity, User} from "../model/generic-entities/abstract-entity";
+import {AbstractEntity, User} from "../model/abstract-and-user-entities";
 import {managedNotificationService} from "./managed-notification-service";
 import {IRatable} from "../lib/common-generic-types";
 

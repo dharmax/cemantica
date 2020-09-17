@@ -1,7 +1,7 @@
 import {jobManagerService, JobOperation, jobPrototypeManager} from "../services/job-manager-service";
 import {ISession} from "../services/session-service";
 import {AccessType} from "../services/privilege-service";
-import {PermissionGroup} from "../model/generic-entities/permission-group";
+import {PermissionGroup} from "../model/permission-group";
 import {journal} from "../services/logger";
 import {checkPermission} from "../lib/controllers-utils";
 

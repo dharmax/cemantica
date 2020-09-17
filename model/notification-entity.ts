@@ -1,7 +1,7 @@
-import {AbstractEntity, User} from "./abstract-entity";
+import {AbstractEntity, User} from "./abstract-and-user-entities";
 import * as joi from "@hapi/joi"
-import {createPredicate} from "../model-manager";
-import {trimObject} from "../../lib";
+import {createPredicate} from "./model-manager";
+import {trimObject} from "../lib";
 
 export class Notification extends AbstractEntity {
 

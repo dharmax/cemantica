@@ -9,7 +9,7 @@ import {
     StandardFields,
     storage,
     unassignRole
-} from "../../services";
+} from "../services";
 import {
     createPredicate,
     deleteAllEntityPredicates,
@@ -20,10 +20,10 @@ import {
     pagePredicates,
     Predicate,
     predicatesBetween
-} from "../model-manager";
+} from "./model-manager";
 import {all, map, props} from 'bluebird'
-import {IReadOptions, IReadResult, ISubscriptionOptions, processTemplate} from "../../lib";
-import {ProjectionItem, ProjectionPredicateItem} from "../../routes/routing-utils";
+import {IReadOptions, IReadResult, ISubscriptionOptions, processTemplate} from "../lib";
+import {ProjectionItem, ProjectionPredicateItem} from "../routes/routing-utils";
 import * as joi from "@hapi/joi";
 import {Notification} from "./notification-entity";
 

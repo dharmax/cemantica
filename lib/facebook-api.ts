@@ -2,7 +2,7 @@ import {get as httpsGet} from 'https'
 import {buildUrl} from "./build-url"
 import {facebookClientId} from "../config/deployment";
 import {LoggedException} from "../services/logger";
-import {User} from "../model/generic-entities";
+import {User} from "../model/index";
 
 const defaultFacebookApiVersion = '3.2'
 

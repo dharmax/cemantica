@@ -13,7 +13,7 @@ import {
 import {Mutex} from '../lib/mutex'
 import {FilterFunction, IReadOptions, IReadResult} from '../lib/common-generic-types'
 import {getDatabaseName, getDatabaseUrl} from "../config/deployment";
-import {AbstractEntity} from "../model/generic-entities/abstract-entity";
+import {AbstractEntity} from "../model/abstract-and-user-entities";
 import {makeEntity, SemanticPackage} from "../model/model-manager";
 import {generate} from 'short-uuid'
 import {storageEventEmitter} from "./storage-event-emitter";

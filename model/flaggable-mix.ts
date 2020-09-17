@@ -1,5 +1,5 @@
-import {AbstractEntity, User} from "./abstract-entity";
-import {createPredicate, predicatesBetween} from "../model-manager";
+import {AbstractEntity, User} from "./abstract-and-user-entities";
+import {createPredicate, predicatesBetween} from "./model-manager";
 
 export interface IFlaggableMix<T extends AbstractEntity> {
     flag?: (user: User, type?: string, reason?: string) => Promise<boolean>

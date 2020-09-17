@@ -1,7 +1,7 @@
 import * as Request from 'request-promise-native'
 import * as mongo from "mongodb";
 import {MongoClientOptions} from "mongodb";
-import * as equal from 'fast-deep-equal'
+import equal from 'fast-deep-equal';
 import {getDatabaseName, getDatabaseUrl} from "../config/deployment";
 
 
@@ -37,6 +37,7 @@ export class Api {
             headers
         })
         try {
+            // @ts-ignore
             const result = await Request.call(this, url, ...args)
             return result
         } catch (e) {

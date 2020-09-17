@@ -21,13 +21,13 @@ import {
 } from "../lib";
 
 import * as resetPasswordService from '../services/reset-password-service'
-import {AbstractEntity, Notification, PermissionGroup, User} from "../model/generic-entities";
+import {AbstractEntity, Notification, PermissionGroup, User} from "../model/index";
 import {AppConfig} from "../config";
 import {getOntology} from "../model";
 import {ISession} from "../services/session-service";
 import {ratingService} from "../services/rating-service";
 import {FeedbackService} from "../services/feedback-service";
-import Boom = require("boom");
+import * as Boom from '@hapi/boom'
 
 
 export const userController = {

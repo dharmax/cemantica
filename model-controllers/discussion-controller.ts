@@ -1,13 +1,13 @@
 import {ISession} from "../services/session-service";
 import {IReadOptions, IReadResult} from "../lib/common-generic-types";
 import {loadEntityById} from "../model/model-manager";
-import {AbstractEntity} from "../model/generic-entities/abstract-entity";
+import {AbstractEntity} from "../model/abstract-and-user-entities";
 import {checkPermission} from "../lib/controllers-utils";
 import {AccessType} from "../services/privilege-service";
-import {Discussion} from "../model/generic-entities/discussion-entity";
+import {Discussion} from "../model/discussion-entity";
 import {journal} from "../services/logger";
 import {managedNotificationService} from "../services/managed-notification-service";
-import {ConfigurationEntity} from "../model/generic-entities/configuration-entity";
+import {ConfigurationEntity} from "../model/configuration-entity";
 
 export const discussionController = {
 

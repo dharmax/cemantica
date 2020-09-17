@@ -1,5 +1,5 @@
 import {PredicateCollection, SEPARATOR, storage} from "../services/storage"
-import {AbstractEntity} from "./generic-entities/abstract-entity";
+import {AbstractEntity} from "./abstract-and-user-entities";
 import {IReadOptions, IReadResult} from "../lib/common-generic-types";
 import {standardOntology} from "./standard-ontology";
 import {IRawOntology} from "./raw-ontology";

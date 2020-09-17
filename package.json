@@ -7,6 +7,7 @@
     "prepublish": "tsc; node_modules/create-ts-index/dist/cti.js create .",
     "test": "npm run build; node_modules/mocha/bin/mocha tests"
   },
+  "type": "module",
   "main": "dist/index.js",
   "repository": {
     "type": "git",

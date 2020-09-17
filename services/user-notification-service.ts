@@ -1,5 +1,3 @@
-import {User} from "../model/generic-entities";
-
 import {lstatSync, readdirSync, readFileSync} from "fs";
 import {all, promisify} from "bluebird";
 import {join} from "path";
@@ -11,7 +9,8 @@ import * as Nexmo from 'nexmo'
 import {AppConfig} from "../config";
 import {Readable} from "stream";
 import {Url} from "url";
-import juice = require("juice");
+import juice from "juice";
+import {User} from "../model";
 
 // noinspection JSUnusedGlobalSymbols
 export async function notifyUsers(userIds: string[], template: MessageTemplate, data: Object) {

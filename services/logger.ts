@@ -1,5 +1,5 @@
 import * as bunyan from "bunyan";
-import {AbstractEntity, User} from "../model/generic-entities/abstract-entity";
+import {AbstractEntity, User} from "../model/abstract-and-user-entities";
 import {all} from 'bluebird'
 import * as mongo from 'mongodb'
 

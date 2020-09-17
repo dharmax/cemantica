@@ -11,7 +11,7 @@ import {
 } from "../services/privilege-service";
 import {journal, LoggedException} from "../services/logger";
 import {RunMode, runMode} from "../config/run-mode";
-import {User as _User} from "../model/generic-entities";
+import {User as _User} from "../model/index";
 
 const User = _User
 

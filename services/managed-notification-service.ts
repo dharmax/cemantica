@@ -1,8 +1,8 @@
-import {AbstractEntity, User} from "../model/generic-entities/abstract-entity";
-import {Notification} from "../model/generic-entities/notification-entity";
+import {AbstractEntity, User} from "../model/abstract-and-user-entities";
+import {Notification} from "../model/notification-entity";
 import {getSessionByToken, getSessionByUser, ISession} from "./session-service";
 import {Server as HapiServer} from "@hapi/hapi";
-import * as SocketIO from "socket.io";
+import SocketIO from "socket.io";
 import {Mutex} from "../lib/mutex";
 import {log} from "./logger";
 

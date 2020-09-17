@@ -1,5 +1,5 @@
-import {AbstractEntity, User} from "./abstract-entity";
-import {createPredicate} from "../model-manager";
+import {AbstractEntity, User} from "./abstract-and-user-entities";
+import {createPredicate} from "./model-manager";
 
 /**
  * Discussion and a discussion post are the same entity type. It is simply a DAG structure

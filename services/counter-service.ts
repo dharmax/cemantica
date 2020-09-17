@@ -1,7 +1,7 @@
 import {storage} from "./storage";
 import {ISession} from "./session-service";
 import {stringHash} from "../lib/utils";
-import {AbstractEntity} from "../model/generic-entities/abstract-entity";
+import {AbstractEntity} from "../model/abstract-and-user-entities";
 
 
 const UpdateOperationsDictionary = {

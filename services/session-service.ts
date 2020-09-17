@@ -1,7 +1,7 @@
 import {storage, StorageSession} from './storage'
 import {userController} from "../model-controllers/user-controller";
 import {journal, log, LoggedException} from "./logger";
-import {PermissionGroup, User} from "../model/generic-entities";
+import {PermissionGroup, User} from "../model/index";
 import {getTemplate, notifyUser, sendEmail, sendSms} from "./user-notification-service";
 import {deleteSessionByToken, findSessionByToken, refreshSession, storeSession} from "./session-storage";
 import {AppConfig, forceAuthentication, runMode, RunMode} from "../config";

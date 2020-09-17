@@ -3,8 +3,8 @@ import {Collection} from "./storage";
 import {cancelJob, Job, scheduleJob} from "node-schedule"
 import {journal, log} from "./logger";
 import {AnySchema} from "@hapi/joi";
-import {ConfigurationEntity} from "../model/generic-entities/configuration-entity";
-import {User} from "../model/generic-entities";
+import {ConfigurationEntity} from "../model/configuration-entity";
+import {User} from "../model/index";
 
 class JobManagerService {
     private myUniqueId = Math.floor(Math.random() * 1000000)

@@ -1,7 +1,7 @@
-import {PermissionGroup} from "../model/generic-entities/permission-group";
+import {PermissionGroup} from "../model/permission-group";
 import {createPredicate, deletePredicate, findPredicates, getOntology, Predicate} from "../model/model-manager";
 import {log, LoggedException} from "./logger";
-import {AbstractEntity} from "../model/generic-entities/abstract-entity";
+import {AbstractEntity} from "../model/abstract-and-user-entities";
 
 export enum AccessType {
     Vote,

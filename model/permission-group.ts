@@ -1,6 +1,6 @@
-import {AbstractEntity} from "./abstract-entity";
+import {AbstractEntity} from "./abstract-and-user-entities";
 import {map} from 'bluebird'
-import {storage} from "../../services/storage";
+import {storage} from "../services/storage";
 
 /**
  * This entity is a generic permission group entity.

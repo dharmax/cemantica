@@ -2,7 +2,7 @@ import {ISession} from "./session-service";
 import {storage} from "./storage";
 
 
-import * as NodeCache from "node-cache";
+import NodeCache from "node-cache";
 import {AppConfig} from "../config";
 
 const cache = new NodeCache({stdTTL: 360})

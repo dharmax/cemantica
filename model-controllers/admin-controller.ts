@@ -1,13 +1,9 @@
 import {ISession} from "../services/session-service";
-import {PermissionGroup} from "../model/generic-entities/permission-group";
-import {AccessType} from "../services/privilege-service";
-import {journal, queryClientLog, queryJournal} from "../services/logger";
-import {IClientLogQuery, IReadOptions} from "../lib/common-generic-types";
-import {getOntology, idAndType2entity} from "../model/model-manager";
-import {storage} from "../services/storage";
-import {AbstractEntity, User} from "../model/generic-entities/abstract-entity";
-import {checkPermission} from "../lib/controllers-utils";
-import Boom = require("boom");
+import {AbstractEntity, PermissionGroup, User} from "../model/index";
+import {AccessType, journal, queryClientLog, queryJournal, storage} from "../services";
+import {checkPermission, IClientLogQuery, IReadOptions} from "../lib";
+import {getOntology, idAndType2entity} from "../model";
+import * as Boom from '@hapi/boom'
 
 
 export const adminController = {

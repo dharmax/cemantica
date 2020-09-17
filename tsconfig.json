@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "esnext",
+    "module": "ES2020",
+    "target": "es2020",
     "lib": [
       "dom",
-      "esnext"
+      "esnext",
+      "ES2020"
     ],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "outDir": "dist",
     "declarationDir": "dist",
     "declarationMap": true,

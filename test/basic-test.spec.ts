@@ -1,7 +1,7 @@
-import * as should from 'should'
+import should from 'should';
 import {Api} from "./test-belt";
 import {describe, it} from "mocha";
-import {delay, props} from 'bluebird';
+import {delay} from 'bluebird';
 import '../lib/arrays'
 import {webServerPort} from "../config/server-address";
 

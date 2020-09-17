@@ -1,7 +1,7 @@
-import {AbstractEntity, User} from "./abstract-entity";
+import {AbstractEntity, User} from "./abstract-and-user-entities";
 import {string} from "@hapi/joi";
-import {ISession} from "../../services/session-service";
-import {createPredicate} from "../model-manager";
+import {ISession} from "../services/session-service";
+import {createPredicate} from "./model-manager";
 
 export class UserFeedback extends AbstractEntity {
     static async create(session: ISession, type: string, text: string): Promise<UserFeedback> {

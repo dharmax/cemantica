@@ -1,5 +1,5 @@
-import {AbstractEntity} from "./abstract-entity";
-import {storage} from "../../services/storage";
+import {AbstractEntity} from "./abstract-and-user-entities";
+import {storage} from "../services/storage";
 
 
 /**
